@@ -795,29 +795,81 @@ function startScan() {
     <button class="btn" onclick="document.getElementById('gal').click()">${svg('img', 20)}Wybierz z galerii</button>
     <button class="btn" onclick="closeSheet();expenseSheet()">${svg('plus', 20)}Dodaj ręcznie</button></div>`);
 }
+let lastScanB64 = '';
+/* Blokada wygaszania ekranu na czas odczytu (Screen Wake Lock – Safari iOS 16.4+) */
+let wakeLock = null, wantAwake = false;
+async function keepAwake(on) {
+  wantAwake = on;
+  try {
+    if (on && !wakeLock && navigator.wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    } else if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch (e) { wakeLock = null; }
+}
+// iOS zwalnia blokadę po przełączeniu aplikacji – odnawiamy ją po powrocie, jeśli odczyt nadal trwa
+document.addEventListener('visibilitychange', () => { if (wantAwake && document.visibilityState === 'visible') keepAwake(true); });
 ['cam', 'gal'].forEach(id => document.getElementById(id).addEventListener('change', async ev => {
   const f = ev.target.files && ev.target.files[0]; ev.target.value = '';
   if (!f) return;
-  openSheet(`<div class="stack" style="text-align:center;padding:30px 0"><div class="spin"></div><h2>Odczytuję paragon…</h2><p class="muted">To zwykle trwa 5–15 sekund.</p></div>`);
-  try {
-    const b64 = await shrink(f);
-    const r = await api('scanReceipt', b64, 'image/jpeg');
-    scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', engine: r.engine, raw: r.raw || '', aiError: r.aiError || '', voucher: r.voucher || 0, who: D.me,
-      items: (r.items || []).map(it => ({ name: it.name, price: it.price, category: it.category, orig: it.category })) };
-    if (!scanState.items.length) scanState.items.push({ name: '', price: 0, category: (D.categories[0] || {}).name, orig: '' });
-    reviewSheet();
-  } catch (e) { closeSheet(); toast('Nie udało się odczytać: ' + errMsg(e)); }
+  try { lastScanB64 = await shrink(f); } catch (e) { return toast(errMsg(e)); }
+  runScan();
 }));
+function scanWaitSheet(title) {
+  openSheet(`<div class="stack" style="text-align:center;padding:30px 0"><div class="spin"></div><h2>${title}</h2><p class="muted" id="scanTimer">0 s</p><p class="small muted">Ekran nie zgaśnie podczas odczytu. Nie zamykaj aplikacji.</p></div>`);
+  keepAwake(true);
+  const t0 = Date.now();
+  clearInterval(scanWaitSheet._i);
+  scanWaitSheet._i = setInterval(() => { const el = document.getElementById('scanTimer'); if (el) el.textContent = Math.round((Date.now() - t0) / 1000) + ' s'; else clearInterval(scanWaitSheet._i); }, 1000);
+}
+function scanFailSheet(e) {
+  clearInterval(scanWaitSheet._i); keepAwake(false);
+  const m = errMsg(e);
+  const net = /load failed|failed to fetch|network|połączeni/i.test(m);
+  openSheet(sheetHead('Nie udało się odczytać') + `<div class="stack">
+    <div class="alert">${net ? 'Przerwane połączenie – odczyt trwał zbyt długo albo telefon stracił internet.' : esc(m)}</div>
+    <button class="btn pri" style="height:56px" onclick="runScan()">Spróbuj ponownie (to samo zdjęcie)</button>
+    <button class="btn" onclick="closeSheet();startScan()">Zrób nowe zdjęcie</button>
+    <button class="btn" onclick="closeSheet();expenseSheet()">Dodaj ręcznie</button></div>`);
+}
+async function runScan() {
+  if (!lastScanB64) return startScan();
+  scanWaitSheet('Odczytuję paragon…');
+  try {
+    const r = await api('scanReceipt', lastScanB64, 'image/jpeg');
+    clearInterval(scanWaitSheet._i); keepAwake(false);
+    setScanState(r);
+    reviewSheet();
+  } catch (e) { scanFailSheet(e); }
+}
+function setScanState(r) {
+  scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', fileId: r.fileId || '', engine: r.engine, raw: r.raw || '', aiError: r.aiError || '', voucher: r.voucher || 0, who: (scanState && scanState.who) || D.me,
+    items: (r.items || []).map(it => ({ name: it.name, price: it.price, category: it.category, orig: it.category })) };
+  if (!scanState.items.length) scanState.items.push({ name: '', price: 0, category: (D.categories[0] || {}).name, orig: '' });
+}
+async function rescan() {
+  const s = scanState;
+  const prev = { count: s.items.length, sum: r2(sum(s.items, 'price')), total: s.total };
+  scanWaitSheet('Sprawdzam paragon jeszcze raz…');
+  try {
+    const r = await api('rescanReceipt', s.fileId, prev);
+    clearInterval(scanWaitSheet._i); keepAwake(false);
+    const newDiff = Math.abs(r2(sum(r.items || [], 'price') - (r.total || s.total)));
+    const oldDiff = Math.abs(prev.sum - s.total);
+    if (newDiff < oldDiff) { setScanState(r); toast('Poprawiono odczyt'); } else toast('Drugi odczyt nie był lepszy – zostawiam pierwszy');
+  } catch (e) { clearInterval(scanWaitSheet._i); keepAwake(false); toast('Nie udało się: ' + errMsg(e)); }
+  reviewSheet();
+}
 function shrink(file) {
   // Długie paragony: zostawiamy dużo pikseli w pionie (do 4000), krótszy bok do 2400 – drobny druk musi być czytelny dla AI
   return new Promise((res, rej) => {
     const img = new Image(), url = URL.createObjectURL(file);
     img.onload = () => {
-      const k = Math.min(1, 4000 / Math.max(img.width, img.height), 2400 / Math.min(img.width, img.height));
+      const k = Math.min(1, 3200 / Math.max(img.width, img.height), 2000 / Math.min(img.width, img.height));
       const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
-      res(c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+      res(c.toDataURL('image/jpeg', 0.8).split(',')[1]);
     };
     img.onerror = () => rej(new Error('Nie można wczytać zdjęcia'));
     img.src = url;
@@ -834,7 +886,8 @@ function reviewSheet() {
       <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin-top:10px">${Object.keys(byCat).map(c => `<div style="flex:${Math.max(0, byCat[c])};background:${catColors(c)[1]}"></div>`).join('')}</div>
       <div class="small muted" style="margin-top:8px">${Object.keys(byCat).map(c => esc(c) + ' ' + zl(byCat[c])).join(' · ')}</div></div>
     ${s.voucher ? `<div class="small muted">Rabat ogólny (voucher) −${zl(s.voucher)} rozłożono proporcjonalnie na produkty.</div>` : ''}
-    ${mismatch ? `<div class="alert">Suma z paragonu to <b>${zl(s.total)}</b>, a pozycje dają ${zl(total)}. Sprawdź ceny albo dopisz brakującą pozycję.</div>` : ''}
+    ${mismatch ? `<div class="alert">Suma z paragonu to <b>${zl(s.total)}</b>, a pozycje dają ${zl(total)}. Sprawdź ceny albo dopisz brakującą pozycję.
+      ${s.engine === 'ai' && s.fileId ? `<button class="btn sm" style="margin-top:8px;width:100%" onclick="rescan()">Sprawdź ponownie (AI, ok. 20–40 s)</button>` : ''}</div>` : ''}
     <div>${s.items.map((it, i) => `<div class="recrow">
       <input class="in" aria-label="Produkt ${i + 1}" value="${esc(it.name)}" oninput="scanState.items[${i}].name=this.value">
       <input class="in num" aria-label="Cena ${i + 1}" inputmode="decimal" style="text-align:right" value="${String(it.price).replace('.', ',')}" onchange="scanState.items[${i}].price=num(this.value);reviewSheet()">
@@ -907,6 +960,7 @@ const Mock = (function () {
     saveGoal(g) { const ex = S.goals.find(x => x.id === g.id); if (ex) Object.assign(ex, g); else S.goals.push(Object.assign({}, g, { id: id(), active: true })); return out(); },
     deleteGoal(i) { S.goals = S.goals.filter(x => x.id !== i); S.deposits = S.deposits.filter(x => x.goalId !== i); return out(); },
     addToGoal(g, a) { const saved = sum(S.deposits.filter(x => x.goalId === g)); if (a < 0 && -a > saved) throw new Error('W skarbonce jest tylko ' + zl(saved)); S.deposits.push({ id: id(), goalId: g, date: today(), amount: a, who: S.me, note: '' }); return out(); },
+    rescanReceipt() { return this.scanReceipt(); },
     scanReceipt() { return { store: 'Market (demo)', date: today(), total: 89.45, engine: 'demo', receiptUrl: '', items: [{ name: 'Mleko 3,2% 1 l', price: 6.98, category: 'Spożywcze' }, { name: 'Chleb żytni', price: 7.49, category: 'Spożywcze' }, { name: 'Kawa ziarnista 1 kg', price: 59.99, category: 'Spożywcze' }, { name: 'Płyn do naczyń', price: 11.49, category: 'Chemia i higiena' }, { name: 'Bateria AA', price: 3.5, category: 'Inne' }] }; }
   };
 })();
