@@ -800,19 +800,20 @@ function startScan() {
   if (!f) return;
   openSheet(`<div class="stack" style="text-align:center;padding:30px 0"><div class="spin"></div><h2>Odczytuję paragon…</h2><p class="muted">To zwykle trwa 5–15 sekund.</p></div>`);
   try {
-    const b64 = await shrink(f, 1800);
+    const b64 = await shrink(f);
     const r = await api('scanReceipt', b64, 'image/jpeg');
-    scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', engine: r.engine, raw: r.raw || '', aiError: r.aiError || '', who: D.me,
+    scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', engine: r.engine, raw: r.raw || '', aiError: r.aiError || '', voucher: r.voucher || 0, who: D.me,
       items: (r.items || []).map(it => ({ name: it.name, price: it.price, category: it.category, orig: it.category })) };
     if (!scanState.items.length) scanState.items.push({ name: '', price: 0, category: (D.categories[0] || {}).name, orig: '' });
     reviewSheet();
   } catch (e) { closeSheet(); toast('Nie udało się odczytać: ' + errMsg(e)); }
 }));
-function shrink(file, max) {
+function shrink(file) {
+  // Długie paragony: zostawiamy dużo pikseli w pionie (do 4000), krótszy bok do 2400 – drobny druk musi być czytelny dla AI
   return new Promise((res, rej) => {
     const img = new Image(), url = URL.createObjectURL(file);
     img.onload = () => {
-      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const k = Math.min(1, 4000 / Math.max(img.width, img.height), 2400 / Math.min(img.width, img.height));
       const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
@@ -832,6 +833,7 @@ function reviewSheet() {
     <div class="card" style="background:var(--soft)"><div class="between"><span class="muted small">Suma pozycji</span><b class="num" style="font-size:24px">${zl(total)}</b></div>
       <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin-top:10px">${Object.keys(byCat).map(c => `<div style="flex:${Math.max(0, byCat[c])};background:${catColors(c)[1]}"></div>`).join('')}</div>
       <div class="small muted" style="margin-top:8px">${Object.keys(byCat).map(c => esc(c) + ' ' + zl(byCat[c])).join(' · ')}</div></div>
+    ${s.voucher ? `<div class="small muted">Rabat ogólny (voucher) −${zl(s.voucher)} rozłożono proporcjonalnie na produkty.</div>` : ''}
     ${mismatch ? `<div class="alert">Suma z paragonu to <b>${zl(s.total)}</b>, a pozycje dają ${zl(total)}. Sprawdź ceny albo dopisz brakującą pozycję.</div>` : ''}
     <div>${s.items.map((it, i) => `<div class="recrow">
       <input class="in" aria-label="Produkt ${i + 1}" value="${esc(it.name)}" oninput="scanState.items[${i}].name=this.value">
