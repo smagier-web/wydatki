@@ -719,7 +719,7 @@ function settingsSheet() {
     <div class="field"><label for="sStart">Saldo początkowe konta (zł)</label><input id="sStart" class="in num" inputmode="decimal" value="${String(s.startBalance).replace('.', ',')}"></div>
     <p class="small muted" style="margin:0">Saldo = saldo początkowe + wpływy − wydatki − wpłaty do skarbonek. Do bieżących poprawek używaj „Koryguj saldo”, bo wtedy zostaje ślad w historii.</p>
     <div class="field"><label>Motyw</label>${themePicker()}</div>
-    <div class="card" style="background:var(--soft)"><div class="small muted">Skanowanie paragonów</div><b>${D.ai ? 'AI (Gemini): dokładne odczytywanie' : 'OCR Dysku Google'}</b>${D.ai ? '' : '<div class="small muted">Dokładniejsze odczytywanie: dodaj klucz GEMINI_API_KEY we właściwościach skryptu (instrukcja w pliku INSTRUKCJA.md).</div>'}
+    <div class="card" style="background:var(--soft)"><div class="small muted">Skanowanie paragonów</div><b>${D.ai ? 'AI: ' + esc(D.aiName || 'Gemini') : 'OCR Dysku Google (bez AI)'}</b>${D.ai ? '' : '<div class="small muted">Dokładniejsze odczytywanie: dodaj klucz ANTHROPIC_API_KEY (Claude) albo GEMINI_API_KEY we właściwościach skryptu.</div>'}
       <button class="btn sm" style="margin-top:10px;width:100%" onclick="testAi(this)">Testuj połączenie z AI</button><div id="aiRes" class="small" style="margin-top:8px"></div></div>
     <button class="btn pri" style="height:56px" onclick="closeSheet();act('saveSettings',{budget:num(val('sBud')),startBalance:num(val('sStart'))})">Zapisz</button>
     ${IS_API ? `<div class="small muted" style="text-align:center">Zalogowano jako <b>${esc(CFG.user)}</b></div><button class="btn danger" onclick="logout()">Odłącz ten telefon</button>` : ''}</div>`);
@@ -861,15 +861,31 @@ async function rescan() {
   reviewSheet();
 }
 function shrink(file) {
-  // Długie paragony: zostawiamy dużo pikseli w pionie (do 4000), krótszy bok do 2400 – drobny druk musi być czytelny dla AI
+  // Zwraca tablicę fragmentów (base64 JPEG). Długi paragon tniemy w poziome pasy z zakładką,
+  // żeby każdy fragment miał ≤ 1568 px (tyle AI czyta bez dodatkowego zmniejszania) i drobny druk był ostry.
   return new Promise((res, rej) => {
     const img = new Image(), url = URL.createObjectURL(file);
     img.onload = () => {
-      const k = Math.min(1, 3200 / Math.max(img.width, img.height), 2000 / Math.min(img.width, img.height));
-      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
-      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       URL.revokeObjectURL(url);
-      res(c.toDataURL('image/jpeg', 0.8).split(',')[1]);
+      const LONG = 1568, W = Math.min(img.width, 1200);
+      const toB64 = (c) => c.toDataURL('image/jpeg', 0.85).split(',')[1];
+      if (img.width >= img.height || img.height * (W / img.width) <= 1800) { // krótki paragon – jedno zdjęcie
+        const k = Math.min(1, LONG / Math.max(img.width, img.height));
+        const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        return res([toB64(c)]);
+      }
+      const k = W / img.width, H = Math.round(img.height * k), STRIP = 1500, OVER = 110;
+      const n = Math.ceil((H - OVER) / (STRIP - OVER));
+      const parts = [];
+      for (let i = 0; i < n; i++) {
+        const y = i * (STRIP - OVER);
+        const h = Math.min(STRIP, H - y);
+        const c = document.createElement('canvas'); c.width = W; c.height = h;
+        c.getContext('2d').drawImage(img, 0, y / k, img.width, h / k, 0, 0, W, h);
+        parts.push(toB64(c));
+      }
+      res(parts);
     };
     img.onerror = () => rej(new Error('Nie można wczytać zdjęcia'));
     img.src = url;
@@ -896,9 +912,9 @@ function reviewSheet() {
     </div>`).join('')}</div>
     <button class="btn sm" onclick="scanState.items.push({name:'',price:0,category:'${esc((D.categories[0] || {}).name || 'Inne')}',orig:''});reviewSheet()">+ Dodaj pozycję</button>
     <div class="field"><label>Kto zapłacił</label>${segHtml('rWho', whoOptions(), s.who)}</div>
-    <p class="small muted" style="margin:0">Zmienione kategorie aplikacja zapamięta i następnym razem przypisze je sama. Odczyt: ${s.engine === 'ai' ? 'AI (' + esc(s.model || 'Gemini') + ')' : 'OCR Dysku Google'}${s.timing ? ' · ' + s.timing.totalS + ' s' : ''}.</p>
-    ${s.aiError ? `<div class="alert">AI nie zadziałało, więc użyto zwykłego OCR. Błąd: <b>${esc(s.aiError)}</b></div>` : ''}
-    ${s.engine === 'ocr' && !s.aiError && !D.ai ? `<div class="alert" style="background:var(--acc-soft);border-color:var(--acc-line);color:var(--link)">Dokładniejszy odczyt (nazwy, ilości, rabaty, kategorie) daje AI Gemini: wystarczy dodać darmowy klucz <b>GEMINI_API_KEY</b> we właściwościach skryptu.</div>` : ''}
+    <p class="small muted" style="margin:0">Zmienione kategorie aplikacja zapamięta i następnym razem przypisze je sama. Odczyt: ${s.engine === 'ai' ? 'AI (' + esc(s.model || 'AI') + ')' : 'OCR Dysku Google'}${s.timing ? ' · ' + s.timing.totalS + ' s' : ''}.</p>
+    ${s.aiError ? `<div class="alert">AI nie zadziałało, więc użyto zapasowego odczytu. Błąd: <b>${esc(s.aiError)}</b></div>` : ''}
+    ${s.engine === 'ocr' && !s.aiError && !D.ai ? `<div class="alert" style="background:var(--acc-soft);border-color:var(--acc-line);color:var(--link)">Dokładniejszy odczyt daje AI: dodaj klucz <b>ANTHROPIC_API_KEY</b> (Claude) we właściwościach skryptu.</div>` : ''}
     ${s.raw ? `<details><summary class="small muted" style="cursor:pointer">Pokaż tekst odczytany z paragonu</summary><pre style="white-space:pre-wrap;font-size:11px;background:var(--soft);border-radius:10px;padding:10px;max-height:240px;overflow:auto">${esc(s.raw)}</pre></details>` : ''}
     <button class="btn pri" style="height:56px" onclick="saveScan()">Zapisz ${s.items.length} pozycji · ${zl(total)}</button></div>`);
 }
