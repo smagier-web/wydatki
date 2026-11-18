@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Wydatki">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="theme-color" content="#F3F4F6" id="themeColor">
+<title>Domowe Wydatki</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F4F6;--card:#FFFFFF;--ink:#0F172A;--muted:#475569;--line:#E2E8F0;--soft:#F1F5F9;--input:var(--input);--acc:#3451D1;--acc-d:#26399A;--link:#3451D1;--on-acc:#FFFFFF;--strong:#0F172A;--acc-soft:#EEF2FF;--acc-line:#C7D2FE;--hero-lbl:#E0E7FF;--warn:#C2410C;--warn-bg:#FFF7ED;--warn-line:#FED7AA;--warn-ink:#9A3412;--ok:#166534;--neg:var(--neg);--danger-bg:#FEF2F2;--danger-line:#FECACA;--bar:#CBD5E1;--teal:#0F766E;--shadow:rgba(15,23,42,.12);color-scheme:light}
+[data-theme="dark"]{--bg:#0B1020;--card:#151B2E;--ink:#F1F5F9;--muted:#A9B4C7;--line:#27314B;--soft:#1E2740;--input:#10172B;--acc:#4F67E8;--acc-d:#A5B4FC;--link:#A5B4FC;--on-acc:#FFFFFF;--strong:#1E2740;--acc-soft:#1C2452;--acc-line:#3B4A8F;--hero-lbl:#E0E7FF;--warn:#FB923C;--warn-bg:#2A1A0E;--warn-line:#7C2D12;--warn-ink:#FDBA74;--ok:#4ADE80;--neg:#F87171;--danger-bg:#2A1214;--danger-line:#7F1D1D;--bar:#334155;--teal:#0F766E;--shadow:rgba(0,0,0,.5);color-scheme:dark}
+[data-theme="pink"]{--bg:#FDF2F8;--card:#FFFFFF;--ink:#2A0F1F;--muted:#7A4566;--line:#F5D0E3;--soft:#FCE7F3;--input:#FFF7FB;--acc:#C2185B;--acc-d:#9D174D;--link:#BE185D;--on-acc:#FFFFFF;--strong:#831843;--acc-soft:#FCE7F3;--acc-line:#F9A8D4;--hero-lbl:#FCE7F3;--warn:#C2410C;--warn-bg:#FFF7ED;--warn-line:#FED7AA;--warn-ink:#9A3412;--ok:#166534;--neg:var(--neg);--danger-bg:#FEF2F2;--danger-line:#FECACA;--bar:#F9A8D4;--teal:#A21CAF;--shadow:rgba(131,24,67,.15);color-scheme:light}
+html,body{transition:background-color .25s}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;font-size:15px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.num{font-family:'Space Grotesk',Inter,sans-serif;font-variant-numeric:tabular-nums}
+#app{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 110px)}
+h1{margin:0;font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.5px}
+h2{margin:0;font-size:17px;font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;align-items:center;gap:10px}
+.between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.card{background:var(--card);border-radius:20px;padding:16px}
+.list{background:var(--card);border-radius:18px;padding:2px 14px}
+.item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--soft);width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.item:last-child{border-bottom:0}
+.item .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.item .t b{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:0 0 auto}
+.hero{background:var(--acc);color:var(--on-acc);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.hero .lbl{font-size:13px;color:var(--hero-lbl)}
+.big{font-family:'Space Grotesk',sans-serif;font-size:40px;font-weight:700;letter-spacing:-1px}
+.track{height:8px;background:var(--soft);border-radius:4px;overflow:hidden}
+.track>div{height:100%;border-radius:4px;background:var(--acc)}
+.hero .track{background:rgba(255,255,255,.22)}.hero .track>div{background:var(--on-acc)}
+.btn{height:50px;border-radius:15px;border:1px solid var(--line);background:var(--card);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;text-decoration:none;color:var(--ink)}
+.btn.dark{background:var(--ink);color:var(--bg);border:0}
+.btn.pri{background:var(--acc);color:var(--on-acc);border:0}
+.btn.warnb{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn-line)}
+.btn.danger{color:var(--neg);border-color:var(--danger-line);background:var(--danger-bg)}
+.btn.sm{height:38px;border-radius:12px;font-size:13px;padding:0 12px}
+.btn:disabled{opacity:.5}
+.pill{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap}
+.pill.on{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.alert{background:var(--warn-bg);border:1px solid var(--warn-line);color:var(--warn-ink);border-radius:14px;padding:10px 12px;font-size:13px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.in{height:48px;border:1px solid var(--line);border-radius:14px;padding:0 14px;background:var(--input);width:100%;font-size:16px}
+.in:focus{outline:2px solid var(--acc);outline-offset:0;background:var(--card)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--soft);border-radius:14px;padding:4px;gap:4px}
+.seg button{height:42px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-weight:500}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 3px var(--shadow)}
+.catgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.catbtn{min-height:64px;border-radius:14px;border:2px solid transparent;font-size:11px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px}
+.catbtn.on{border-color:currentColor}
+.amount-in{border:0;outline:0;background:transparent;text-align:center;font:700 48px 'Space Grotesk',sans-serif;width:100%;letter-spacing:-1px}
+.check{width:26px;height:26px;accent-color:#16A34A;margin:0;flex:0 0 auto}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 8px calc(env(safe-area-inset-bottom) + 8px);z-index:20}
+.tabs .in-tabs{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:start}
+.tab{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:500;color:var(--muted);padding:4px 0;min-height:48px}
+.tab.on{color:var(--link);font-weight:600}
+.fab{justify-self:center;margin-top:-24px;width:60px;height:60px;border-radius:30px;background:var(--acc);color:var(--on-acc);border:0;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px var(--shadow)}
+.sheet{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:flex-end}
+.sheet.hidden{display:none}
+.sheet-bg{position:absolute;inset:0;background:rgba(15,23,42,.45)}
+.sheet-card{position:relative;background:var(--card);border-radius:24px 24px 0 0;max-height:94vh;overflow-y:auto;padding:16px 18px calc(env(safe-area-inset-bottom) + 18px);width:100%;max-width:560px;margin:0 auto}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+.x{width:44px;height:44px;border-radius:22px;border:0;background:var(--soft);display:flex;align-items:center;justify-content:center}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 100px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1}
+#busy{position:fixed;top:0;left:0;height:3px;background:var(--acc);z-index:70;width:0;transition:width .4s}
+#busy.on{width:80%}
+.spin{width:44px;height:44px;border-radius:50%;border:4px solid var(--soft);border-top-color:var(--acc);animation:sp 1s linear infinite;margin:20px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.hscroll{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.hscroll::-webkit-scrollbar{display:none}
+.catcard{flex:0 0 auto;width:118px;background:var(--card);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:110px}
+.bars>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+.bars span{font-size:11px;color:var(--muted)}
+.bars i{display:block;width:100%;border-radius:8px;background:var(--bar);min-height:3px}
+.recrow{display:grid;grid-template-columns:1fr 92px 30px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--soft)}
+.recrow .in{height:40px;font-size:15px;border-radius:10px;padding:0 10px}
+.recrow select.in{grid-column:1 / span 2;height:34px;font-size:13px}
+.link{color:var(--link);font-weight:600;text-decoration:none;background:none;border:0;padding:0;font-size:14px}
+.demo{background:#FEF3C7;color:#92400E;border-radius:12px;padding:8px 12px;font-size:12px;margin-bottom:12px}
+.goal-bar{height:10px;border-radius:5px;background:var(--soft);overflow:hidden}
+.goal-bar>div{height:100%;border-radius:5px}
+.standalone .tabs{padding-bottom:max(env(safe-area-inset-bottom),22px)}
+.standalone #app{padding-bottom:calc(max(env(safe-area-inset-bottom),22px) + 104px)}
+details.cat{border-bottom:1px solid var(--soft)}
+details.cat:last-child{border-bottom:0}
+details.cat summary{list-style:none;display:flex;align-items:center;gap:10px;padding:11px 0;cursor:pointer}
+details.cat summary::-webkit-details-marker{display:none}
+details.cat summary .chev{transition:transform .2s;color:var(--muted)}
+details.cat[open] summary .chev{transform:rotate(90deg)}
+.hbar{height:6px;border-radius:3px;background:var(--soft);overflow:hidden;margin-top:5px}
+.hbar>div{height:100%;border-radius:3px}
+.prod{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0 8px 48px;border-top:1px dashed var(--line);font-size:13px}
+.prod .pn{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prod .pm{color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div id="busy"></div>
+<main id="app"><div class="spin" aria-label="Wczytywanie"></div></main>
+<nav class="tabs" aria-label="Nawigacja"><div class="in-tabs" id="tabs"></div></nav>
+<div id="sheet" class="sheet hidden" role="dialog" aria-modal="true"><div class="sheet-bg" onclick="closeSheet()"></div><div class="sheet-card" id="sheetCard"></div></div>
+<div id="toast" role="status"></div>
+<input type="file" id="cam" accept="image/*" capture="environment" hidden>
+<input type="file" id="gal" accept="image/*" hidden>
+
+<script>
+/* ================= Połączenie z backendem ================= */
+// Trzy tryby: 1) Google Apps Script (google.script.run), 2) GitHub Pages → API skryptu (fetch + token), 3) demo.
+const IS_GAS = typeof google !== 'undefined' && google.script && google.script.run;
+const CFG_KEY = 'dw_cfg_v1';
+let CFG = null;
+try { CFG = JSON.parse(localStorage.getItem(CFG_KEY) || 'null'); } catch (e) { CFG = null; }
+(function readHash() {
+  // Link konfiguracyjny: index.html#api=<adres /exec>&token=<token>
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('api') && h.get('token')) {
+    CFG = Object.assign({}, CFG || {}, { api: h.get('api').trim(), token: h.get('token').trim(), user: (CFG && CFG.user) || '' });
+    try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch (e) { }
+    // W Safari zostawiamy #api=… w adresie, żeby „Do ekranu początkowego” zapisało pełny link
+    // (aplikacja z ikony ma osobną pamięć). W trybie pełnoekranowym czyścimy adres.
+    let standalone = false;
+    try { standalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches; } catch (e) { }
+    if (standalone) history.replaceState(null, '', location.pathname + location.search);
+  }
+})();
+const IS_API = !IS_GAS && !!(CFG && CFG.api && CFG.token);
+const IS_DEMO = !IS_GAS && !IS_API;
+
+async function remote(fn, args, cfg) {
+  cfg = cfg || CFG;
+  const res = await fetch(cfg.api, { method: 'POST', body: JSON.stringify({ token: cfg.token, user: cfg.user, fn: fn, args: args }) });
+  if (!res.ok) throw new Error('Błąd połączenia (' + res.status + ')');
+  let j; try { j = await res.json(); } catch (e) { throw new Error('Serwer nie zwrócił danych. Sprawdź adres /exec i czy wdrożenie ma dostęp „Każdy”.'); }
+  if (!j.ok) throw new Error(j.error || 'Nieznany błąd');
+  return j.data;
+}
+function api(fn) {
+  const args = Array.prototype.slice.call(arguments, 1);
+  if (IS_GAS) return new Promise((res, rej) => { const r = google.script.run.withSuccessHandler(res).withFailureHandler(rej); r[fn].apply(r, args); });
+  if (IS_API) return remote(fn, args);
+  return new Promise((res, rej) => setTimeout(() => { try { res(Mock[fn].apply(null, args)); } catch (e) { rej(e); } }, fn === 'scanReceipt' ? 1200 : 150));
+}
+
+/* Ekran pierwszej konfiguracji (GitHub Pages) */
+function setupScreen(msg) {
+  document.getElementById('tabs').innerHTML = '';
+  const c = CFG || {};
+  document.getElementById('app').innerHTML = `<div class="stack" style="padding-top:20px">
+    <div class="row" style="gap:12px"><img src="icon-192.png" alt="" width="56" height="56" style="border-radius:14px"><div><h1>Domowe Wydatki</h1><div class="muted">Połącz aplikację z Waszym arkuszem</div></div></div>
+    ${msg ? `<div class="alert">${esc(msg)}</div>` : ''}
+    <div class="card stack">
+      <div class="field"><label for="cApi">Adres skryptu (kończy się na /exec)</label><input id="cApi" class="in" value="${esc(c.api || '')}" placeholder="https://script.google.com/macros/s/…/exec" autocapitalize="off" autocorrect="off"></div>
+      <div class="field"><label for="cTok">Token aplikacji</label><input id="cTok" class="in" value="${esc(c.token || '')}" autocapitalize="off" autocorrect="off" spellcheck="false"></div>
+      <button class="btn pri" onclick="setupConnect()">Połącz</button>
+      <div id="cWho"></div>
+    </div>
+    <div class="card" style="background:var(--acc-soft);color:var(--link)"><b>Na iPhonie:</b> najpierw wybierz <b>Udostępnij → Do ekranu początkowego</b>, a dopiero potem otwórz aplikację ikoną i kliknij „Połącz”.</div>
+    <p class="small muted">Adres i token znajdziesz w dzienniku skryptu po uruchomieniu funkcji <b>pokazToken</b>. Zapisują się tylko na tym telefonie. Nie udostępniaj ich nikomu spoza domu.</p>
+    <button class="btn" onclick="startDemo()">Zobacz wersję demo</button>
+  </div>`;
+}
+async function setupConnect() {
+  const cfg = { api: val('cApi').trim(), token: val('cTok').trim(), user: '' };
+  if (!/^https:\/\/script\.google\.com\/.+\/exec/.test(cfg.api)) return toast('Wklej adres kończący się na /exec');
+  if (!cfg.token) return toast('Wklej token');
+  busy(true);
+  try {
+    const members = await probeMembers(cfg);
+    document.getElementById('cWho').innerHTML = `<div class="field" style="margin-top:6px"><label>Kim jesteś?</label><div class="grid2">${members.map(n => `<button class="btn" onclick="setupFinish('${esc(n)}')">${esc(n)}</button>`).join('')}</div></div>`;
+  } catch (e) { toast(errMsg(e)); }
+  finally { busy(false); }
+}
+async function probeMembers(cfg) {
+  try { await remote('hello', [], Object.assign({}, cfg, { user: '__check__' })); }
+  catch (e) {
+    if (/Nieprawidłowy token/.test(e.message)) throw new Error('Nieprawidłowy token aplikacji.');
+    const m = String(e.message).match(/DOMOWNICY:(.+)$/);
+    if (m) return m[1].split('|');
+    if (!/Nieznany domownik/.test(e.message)) throw e;
+  }
+  return ['Ty', 'Żona'];
+}
+function setupFinish(user) {
+  CFG = { api: val('cApi').trim(), token: val('cTok').trim(), user: user };
+  try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); } catch (e) { }
+  location.reload();
+}
+function startDemo() { window.__demo = true; api = function (fn) { const a = Array.prototype.slice.call(arguments, 1); return Promise.resolve(Mock[fn].apply(null, a)); }; boot(); }
+function logout() {
+  if (!confirm('Odłączyć ten telefon od arkusza? Dane w arkuszu zostaną.')) return;
+  try { localStorage.removeItem(CFG_KEY); } catch (e) { }
+  location.reload();
+}
+
+/* ================= Stan ================= */
+let D = null;
+let view = 'home';
+let billMonth = curMonth();
+let hist = { filter: 'all', q: '' };
+let scanState = null;
+let stat = { period: 'm', month: curMonth(), billsIn: false };
+
+const MONTHS = ['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
+const MONTHS_GEN = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
+const MONTHS_SHORT = ['sty','lut','mar','kwi','maj','cze','lip','sie','wrz','paź','lis','gru'];
+const DAYS = ['Niedziela','Poniedziałek','Wtorek','Środa','Czwartek','Piątek','Sobota'];
+const PALETTE = [['#DCFCE7','#166534'],['#E0F2FE','#075985'],['#FCE7F3','#9D174D'],['#FEF3C7','#92400E'],['#FFEDD5','#9A3412'],['#CFFAFE','#155E75'],['#E0E7FF','#3730A3'],['#FEE2E2','#991B1B'],['#F3E8FF','#6B21A8'],['#ECFCCB','#3F6212'],['#FAE8FF','#86198F'],['#E2E8F0','#334155'],['#F1F5F9','#334155']];
+const GOAL_COLORS = ['#0F766E','#3451D1','#F59E0B','#DB2777','#7C3AED','#16A34A'];
+const BILL_SOURCE = 'Opłata stała';
+
+/* ================= Motywy ================= */
+const THEMES = [
+  { id: 'light', name: 'Jasny', bg: '#F3F4F6', card: '#FFFFFF', acc: '#3451D1' },
+  { id: 'dark', name: 'Ciemny', bg: '#0B1020', card: '#151B2E', acc: '#4F67E8' },
+  { id: 'pink', name: 'Różowy', bg: '#FDF2F8', card: '#FFFFFF', acc: '#C2185B' }
+];
+let theme = 'light';
+try { theme = localStorage.getItem('dw_theme') || 'light'; } catch (e) { }
+function applyTheme(t) {
+  const th = THEMES.find(x => x.id === t) || THEMES[0];
+  theme = th.id;
+  document.documentElement.setAttribute('data-theme', th.id);
+  const m = document.getElementById('themeColor'); if (m) m.setAttribute('content', th.bg);
+  try { localStorage.setItem('dw_theme', th.id); } catch (e) { }
+}
+applyTheme(theme);
+try { if (window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches) document.documentElement.classList.add('standalone'); } catch (e) { }
+function setTheme(t) {
+  applyTheme(t);
+  document.querySelectorAll('.theme-opt').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === t ? 'true' : 'false'));
+  document.querySelectorAll('.theme-opt').forEach(b => b.style.outline = b.dataset.t === t ? '3px solid var(--acc)' : 'none');
+  api('setTheme', t).catch(() => { });
+}
+function themePicker() {
+  return `<div class="grid3">${THEMES.map(t => `<button type="button" class="theme-opt" data-t="${t.id}" aria-pressed="${t.id === theme}" onclick="setTheme('${t.id}')" style="border:1px solid var(--line);border-radius:16px;padding:10px;background:var(--card);color:var(--ink);display:flex;flex-direction:column;gap:8px;align-items:stretch;outline:${t.id === theme ? '3px solid var(--acc)' : 'none'};outline-offset:1px">
+    <span style="height:54px;border-radius:10px;background:${t.bg};display:flex;flex-direction:column;gap:5px;padding:7px;box-sizing:border-box;border:1px solid rgba(0,0,0,.06)">
+      <span style="height:14px;border-radius:5px;background:${t.acc}"></span><span style="height:8px;width:70%;border-radius:4px;background:${t.card}"></span><span style="height:8px;width:50%;border-radius:4px;background:${t.card}"></span></span>
+    <b style="font-size:13px;text-align:center">${t.name}</b></button>`).join('')}</div>`;
+}
+function themeSheet() { openSheet(sheetHead('Motyw aplikacji') + `<div class="stack">${themePicker()}<p class="small muted" style="margin:0">Motyw zapamiętuje się osobno dla każdego z Was, na Waszych kontach Google.</p></div>`); }
+
+/* ================= Pomocnicze ================= */
+const nf = new Intl.NumberFormat('pl-PL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function zl(n) { return nf.format(Number(n) || 0).replace(/ /g, ' ') + ' zł'; }
+function zl0(n) { return new Intl.NumberFormat('pl-PL', { maximumFractionDigits: 0 }).format(Math.round(Number(n) || 0)).replace(/ /g, ' ') + ' zł'; }
+function num(v) { const n = parseFloat(String(v == null ? '' : v).replace(/\s/g, '').replace(',', '.')); return isNaN(n) ? 0 : n; }
+function r2(n) { return Math.round(n * 100) / 100; }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+function pad(n) { return String(n).padStart(2, '0'); }
+function today() { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function curMonth() { return today().slice(0, 7); }
+function shiftMonth(m, k) { const [y, mo] = m.split('-').map(Number); const d = new Date(y, mo - 1 + k, 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+function monthName(m) { const [y, mo] = m.split('-').map(Number); return MONTHS[mo - 1].replace(/^./, c => c.toUpperCase()) + ' ' + y; }
+function dayLabel(ds) {
+  const t = today(), y = new Date(); y.setDate(y.getDate() - 1);
+  const ys = y.getFullYear() + '-' + pad(y.getMonth() + 1) + '-' + pad(y.getDate());
+  const [yy, mm, dd] = ds.split('-').map(Number); const d = new Date(yy, mm - 1, dd);
+  const base = dd + ' ' + MONTHS_GEN[mm - 1];
+  if (ds === t) return 'Dziś, ' + base;
+  if (ds === ys) return 'Wczoraj, ' + base;
+  return DAYS[d.getDay()] + ', ' + base;
+}
+function sum(list, k) { return list.reduce((a, x) => a + (Number(x[k || 'amount']) || 0), 0); }
+function catIdx(name) { const i = D.categories.findIndex(c => c.name === name); return i < 0 ? PALETTE.length - 1 : i % PALETTE.length; }
+function catColors(name) { return PALETTE[catIdx(name)]; }
+function catShort(name) { const w = String(name).split(/\s+/); return (w[0][0] + (w[0][1] || '')).replace(/^./, c => c.toUpperCase()); }
+function catIcon(name, size) { const c = catColors(name); return `<span class="ic" style="background:${c[0]};color:${c[1]}${size ? ';width:' + size + 'px;height:' + size + 'px' : ''}" aria-hidden="true">${esc(catShort(name))}</span>`; }
+function whoOptions() { return D.members.concat(['Wspólne']); }
+function initials(n) { return n === 'Wspólne' ? 'W' : String(n).slice(0, 2).replace(/^./, c => c.toUpperCase()); }
+const MEMBER_COLORS = ['#3451D1', '#C2410C', '#0F766E', '#7C3AED'];
+
+/* Obliczenia */
+function monthExp(m) { return D.expenses.filter(e => e.date.slice(0, 7) === m); }
+function isBill(e) { return e.source === BILL_SOURCE; }
+function realIncomes() { return D.incomes.filter(i => i.type !== 'Korekta'); }
+function savedTotal() { return sum(D.deposits || []); }
+function balance() { return r2(D.settings.startBalance + sum(D.incomes) - sum(D.expenses) - savedTotal()); }
+function billPaid(b, m) { return D.expenses.find(e => e.billKey === b.id + '|' + m); }
+function activeBills() { return D.bills.filter(b => b.active).sort((a, b) => a.day - b.day); }
+
+/* UI */
+function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600); }
+function busy(on) { document.getElementById('busy').classList.toggle('on', !!on); }
+function errMsg(e) { return (e && (e.message || e)) + ''; }
+async function act(fn) {
+  const args = Array.prototype.slice.call(arguments, 1);
+  busy(true);
+  try { D = await api.apply(null, [fn].concat(args)); render(); return true; }
+  catch (e) { toast(errMsg(e)); return false; }
+  finally { busy(false); }
+}
+function openSheet(html) { document.getElementById('sheetCard').innerHTML = '<div class="grab"></div>' + html; document.getElementById('sheet').classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+function closeSheet() { document.getElementById('sheet').classList.add('hidden'); document.body.style.overflow = ''; }
+function go(v) { view = v; render(); window.scrollTo(0, 0); }
+function val(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+
+const ICONS = {
+  home: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  scan: '<path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/>',
+  bills: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="m8 12 2.5 2.5L16 9"/>',
+  wallet: '<path d="M3 7h15a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3zM3 7l12-3v3M16 13.5h.01"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  back: '<path d="M15 18 9 12l6-6"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  left: '<path d="M15 18 9 12l6-6"/>', right: '<path d="m9 18 6-6-6-6"/>',
+  chev: '<path d="m9 6 6 6-6 6"/>',
+  img: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="m3 16 5-5 5 5 3-3 5 5"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  piggy: '<path d="M19 9a7 6 0 1 0-1 7l1 3h2v-4l1-1v-3h-2a7 7 0 0 0-1-2zM8 4l3 2"/><path d="M15 11h.01"/>'
+};
+function svg(name, size, sw) { return `<svg width="${size || 22}" height="${size || 22}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`; }
+
+/* ================= Render ================= */
+function render() {
+  if (!D) return;
+  const v = { home: vHome, hist: vHist, bills: vBills, budget: vBudget, goals: vGoals, cats: vCats }[view] || vHome;
+  document.getElementById('app').innerHTML = ((IS_GAS || IS_API) ? '' : '<div class="demo">Tryb demo: dane są przykładowe i zostają tylko na tym urządzeniu. Po wdrożeniu w Google Apps Script wszystko zapisuje się we wspólnym arkuszu.</div>') + v();
+  renderTabs();
+  if (view === 'hist') { const s = document.getElementById('q'); if (s && hist.focus) { s.focus(); s.setSelectionRange(s.value.length, s.value.length); } }
+}
+function renderTabs() {
+  const t = (id, label, icon) => `<button class="tab ${view === id ? 'on' : ''}" onclick="go('${id}')">${svg(icon, 24)}${label}</button>`;
+  document.getElementById('tabs').innerHTML =
+    t('home', 'Pulpit', 'home') + t('hist', 'Historia', 'list') +
+    `<button class="fab" aria-label="Skanuj paragon" onclick="startScan()">${svg('scan', 26)}</button>` +
+    t('bills', 'Opłaty', 'bills') + t('budget', 'Budżet', 'wallet');
+}
+
+function vHome() {
+  const m = curMonth(), ex = monthExp(m), varEx = ex.filter(e => !isBill(e));
+  const spent = sum(varEx), bud = D.settings.budget, pct = bud ? Math.min(100, Math.round(spent / bud * 100)) : 0;
+  const unpaid = activeBills().filter(b => !billPaid(b, m));
+  const byCat = {}; ex.forEach(e => byCat[e.category] = (byCat[e.category] || 0) + e.amount);
+  const cats = Object.keys(byCat).sort((a, b) => byCat[b] - byCat[a]).slice(0, 8);
+  const recent = D.expenses.slice().sort((a, b) => b.date.localeCompare(a.date) || b.added - a.added).slice(0, 5);
+  const goals = (D.goals || []).filter(g => g.active);
+  const avatars = D.members.map((n, i) => `<span style="width:40px;height:40px;border-radius:20px;background:${MEMBER_COLORS[i % 4]};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;border:3px solid var(--bg);${i ? 'margin-left:-12px' : ''}" title="${esc(n)}">${esc(initials(n))}</span>`).join('');
+  return `<div class="stack">
+    <div class="between"><div><div class="muted small" style="font-size:13px;font-weight:500">${monthName(m)}</div><h1>Nasz dom</h1></div><div class="row" style="gap:10px"><button class="x" style="background:var(--card)" aria-label="Zmień motyw" onclick="themeSheet()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 2-.9 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.4A4.6 4.6 0 0 0 21 9.8C21 6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="15" cy="7" r="1"/></svg></button><div class="row" style="gap:0">${avatars}</div></div></div>
+    <section class="hero" aria-label="Podsumowanie miesiąca">
+      <span class="lbl">Wydaliśmy w tym miesiącu (bez opłat stałych)</span>
+      <span class="big num">${zl(spent)}</span>
+      ${bud ? `<div class="track"><div style="width:${pct}%"></div></div>
+      <div class="between lbl"><span>${pct}% z budżetu ${zl0(bud)}</span><span>${spent > bud ? 'ponad o ' + zl(spent - bud) : 'zostało ' + zl(bud - spent)}</span></div>` : `<button class="link" style="color:#fff;text-align:left" onclick="settingsSheet()">Ustaw miesięczny budżet ›</button>`}
+      <button onclick="go('budget')" style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.14);border:0;border-radius:12px;padding:10px 12px;color:#fff;font-size:14px"><span>Saldo konta</span><b class="num" style="font-size:16px">${zl(balance())} ›</b></button>
+    </section>
+    <div class="grid3">
+      <button class="btn dark" onclick="startScan()">${svg('scan', 18)}Skanuj</button>
+      <button class="btn" onclick="expenseSheet()">${svg('plus', 18)}Ręcznie</button>
+      <button class="btn ${unpaid.length ? 'warnb' : ''}" onclick="go('bills')">Opłaty${unpaid.length ? ' · ' + unpaid.length : ' ✓'}</button>
+    </div>
+    ${cats.length ? `<div class="stack" style="gap:10px"><div class="between"><h2>Kategorie</h2><button class="link" onclick="go('budget');setTimeout(()=>{const s=document.getElementById('stats');if(s)s.scrollIntoView({behavior:'smooth'})},50)">Na co wydajemy ›</button></div>
+      <div class="hscroll">${cats.map(c => `<div class="catcard">${catIcon(c, 32)}<span class="small muted">${esc(c)}</span><b class="num" style="font-size:16px">${zl0(byCat[c])}</b></div>`).join('')}</div></div>` : ''}
+    ${goals.length ? `<div class="stack" style="gap:10px"><div class="between"><h2>Skarbonki</h2><button class="link" onclick="go('goals')">Wszystkie</button></div>
+      <div class="hscroll">${goals.map((g, i) => { const p = g.target ? Math.min(100, Math.round(g.saved / g.target * 100)) : 0; return `<button class="catcard" style="width:170px;border:0;text-align:left" onclick="go('goals')"><b style="font-size:14px">${esc(g.name)}</b><span class="num" style="font-size:16px;font-weight:600">${zl0(g.saved)}</span><div class="goal-bar"><div style="width:${p}%;background:${g.color || GOAL_COLORS[i % GOAL_COLORS.length]}"></div></div><span class="small muted">${p}% z ${zl0(g.target)}</span></button>`; }).join('')}</div></div>`
+      : `<button class="btn" onclick="go('goals')">${svg('piggy', 18)}Załóż skarbonkę na cel</button>`}
+    <div class="stack" style="gap:10px"><div class="between"><h2>Ostatnie</h2><button class="link" onclick="go('hist')">Historia</button></div>
+      ${recent.length ? `<div class="list">${recent.map(expRow).join('')}</div>` : `<div class="card muted">Brak wydatków. Zeskanuj pierwszy paragon albo dodaj wydatek ręcznie.</div>`}
+    </div>
+  </div>`;
+}
+
+function expRow(e) {
+  const meta = [e.source === 'Paragon' ? e.store || 'Paragon' : e.source === BILL_SOURCE ? 'Opłata stała' : e.category, e.who, e.date !== today() ? e.date.slice(8) + '.' + e.date.slice(5, 7) : ''].filter(Boolean).join(' · ');
+  return `<button class="item" onclick="expenseSheet('${e.id}')">${catIcon(e.category)}<span class="t"><b>${esc(e.desc || e.category)}</b><span class="small muted">${esc(meta)}</span></span><span class="num" style="font-weight:600">−${zl(e.amount)}</span></button>`;
+}
+
+function vHist() {
+  const opts = [['all', 'Wszystko']].concat(D.members.map(m => [m, m]), [['Wspólne', 'Wspólne'], ['Paragon', 'Paragony'], [BILL_SOURCE, 'Opłaty']]);
+  return `<div class="stack">
+    <h1>Historia</h1>
+    <div class="field"><label for="q" style="position:absolute;left:-9999px">Szukaj</label>
+      <input id="q" class="in" style="background:var(--card);border:0" placeholder="Szukaj produktu, sklepu, kwoty…" value="${esc(hist.q)}" oninput="hist.q=this.value;document.getElementById('hlist').innerHTML=histList()" onfocus="hist.focus=true" onblur="hist.focus=false"></div>
+    <div class="chips">${opts.map(o => `<button class="pill ${hist.filter === o[0] ? 'on' : ''}" onclick="hist.filter='${esc(o[0])}';render()">${esc(o[1])}</button>`).join('')}</div>
+    <div id="hlist" class="stack">${histList()}</div>
+  </div>`;
+}
+function histList() {
+  const q = hist.q.trim().toLowerCase();
+  let list = D.expenses.filter(e => {
+    if (hist.filter !== 'all') {
+      if (hist.filter === 'Paragon' || hist.filter === BILL_SOURCE) { if (e.source !== hist.filter) return false; }
+      else if (e.who !== hist.filter) return false;
+    }
+    if (!q) return true;
+    return [e.desc, e.store, e.category, e.who, String(e.amount).replace('.', ',')].join(' ').toLowerCase().indexOf(q) >= 0;
+  }).sort((a, b) => b.date.localeCompare(a.date) || b.added - a.added);
+  if (!list.length) return '<div class="card muted">Nic nie znaleziono.</div>';
+  const groups = [];
+  list.slice(0, 300).forEach(e => { const g = groups[groups.length - 1]; if (g && g.d === e.date) g.items.push(e); else groups.push({ d: e.date, items: [e] }); });
+  return groups.map(g => `<div class="stack" style="gap:6px"><div class="between small muted" style="font-weight:600;padding:0 4px;font-size:13px"><span>${dayLabel(g.d)}</span><span class="num">−${zl(sum(g.items))}</span></div><div class="list">${g.items.map(expRow).join('')}</div></div>`).join('');
+}
+
+function vBills() {
+  const m = billMonth, bills = activeBills();
+  const rows = bills.map(b => ({ b, paid: billPaid(b, m) }));
+  const paidN = rows.filter(r => r.paid).length, left = sum(rows.filter(r => !r.paid).map(r => r.b));
+  const pct = bills.length ? Math.round(paidN / bills.length * 100) : 0;
+  const isCur = m === curMonth(), d = new Date().getDate();
+  return `<div class="stack">
+    <div class="between"><h1>Opłaty stałe</h1><button class="x" style="background:var(--acc);color:var(--on-acc)" aria-label="Dodaj opłatę" onclick="billSheet()">${svg('plus', 20, 2.4)}</button></div>
+    <div class="between card" style="padding:6px">
+      <button class="x" aria-label="Poprzedni miesiąc" onclick="billMonth=shiftMonth(billMonth,-1);render()">${svg('left', 18)}</button>
+      <b>${monthName(m)}</b>
+      <button class="x" aria-label="Następny miesiąc" onclick="billMonth=shiftMonth(billMonth,1);render()">${svg('right', 18)}</button>
+    </div>
+    <section style="background:var(--strong);color:#fff;border-radius:22px;padding:16px 18px" class="stack">
+      <div class="between small" style="color:#CBD5E1;font-size:13px"><span>Zapłacono ${paidN} z ${bills.length}</span><span>${pct}%</span></div>
+      <div class="track" style="background:#1E293B"><div style="width:${pct}%;background:#4ADE80"></div></div>
+      <div class="grid2"><div><div class="small" style="color:#CBD5E1">Pozostało do zapłaty</div><div class="num" style="font-size:22px;font-weight:700;color:#FDBA74">${zl(left)}</div></div>
+      <div><div class="small" style="color:#CBD5E1">Saldo konta teraz</div><div class="num" style="font-size:22px;font-weight:700">${zl(balance())}</div></div></div>
+    </section>
+    ${bills.length ? `<div class="list">${rows.map(({ b, paid }) => {
+      const soon = !paid && isCur && b.day >= d && b.day - d <= 3, late = !paid && isCur && b.day < d;
+      const meta = paid ? `Zapłacone · ${esc(paid.who)}` : late ? `Po terminie (${b.day}.)` : soon ? `Termin ${b.day}. · wkrótce` : `Termin ${b.day}. dnia`;
+      return `<div class="item"><input type="checkbox" class="check" ${paid ? 'checked' : ''} aria-label="Zapłacone: ${esc(b.name)}" onchange="act('toggleBill','${b.id}','${m}')">
+        <button class="t" style="border:0;background:none;text-align:left;padding:0" onclick="billSheet('${b.id}')"><b style="${paid ? 'text-decoration:line-through;color:#64748B' : ''}">${esc(b.name)}</b><span class="small" style="color:${paid ? 'var(--ok)' : late || soon ? 'var(--warn)' : 'var(--muted)'}">${meta}</span></button>
+        <span class="num" style="font-weight:600;${paid ? 'color:#64748B' : ''}">${zl(b.amount)}</span></div>`;
+    }).join('')}</div>` : `<div class="card muted">Dodaj czynsz, prąd, internet, raty i inne stałe opłaty. Co miesiąc odhaczasz zapłacone, a kwota od razu odejmuje się od salda.</div>`}
+  </div>`;
+}
+
+function vBudget() {
+  const m = curMonth(), ex = monthExp(m);
+  const inc = realIncomes().filter(i => i.date.slice(0, 7) === m);
+  const corr = D.incomes.filter(i => i.type === 'Korekta').sort((a, b) => b.date.localeCompare(a.date));
+  const varEx = ex.filter(e => !isBill(e)), billEx = ex.filter(isBill);
+  const depM = (D.deposits || []).filter(x => x.date.slice(0, 7) === m);
+  const byCat = {}; varEx.forEach(e => byCat[e.category] = (byCat[e.category] || 0) + e.amount);
+  const limited = D.categories.filter(c => c.limit > 0 || byCat[c.name]);
+  const months = []; for (let k = 5; k >= 0; k--) months.push(shiftMonth(m, -k));
+  const mTotals = months.map(mm => sum(monthExp(mm)));
+  const maxT = Math.max.apply(null, mTotals.concat([1]));
+  const byWho = {}; ex.forEach(e => { if (e.who && e.who !== 'Wspólne') byWho[e.who] = (byWho[e.who] || 0) + e.amount; });
+  const members = D.members, totalWho = sum(Object.keys(byWho).map(k => ({ amount: byWho[k] })));
+  let settle = '';
+  if (members.length === 2 && totalWho > 0) {
+    const a = byWho[members[0]] || 0, b = byWho[members[1]] || 0, half = (a + b) / 2;
+    settle = Math.abs(a - half) < 0.01 ? 'Jesteście rozliczeni 50/50.' : `${esc(a > half ? members[1] : members[0])} → ${esc(a > half ? members[0] : members[1])}: <b class="num">${zl(Math.abs(a - half))}</b> do wyrównania 50/50`;
+  }
+  return `<div class="stack">
+    <div class="between"><h1>Budżet</h1><button class="btn sm" onclick="settingsSheet()">Ustawienia</button></div>
+    <section class="hero" style="gap:10px">
+      <span class="lbl">Saldo wspólnego konta</span>
+      <span class="big num">${zl(balance())}</span>
+      <div class="stack" style="gap:6px;font-size:13px;border-top:1px solid rgba(255,255,255,.25);padding-top:10px">
+        <div class="between"><span class="lbl">Wpływy w tym miesiącu</span><b class="num">+${zl(sum(inc))}</b></div>
+        <div class="between"><span class="lbl">Wydatki bieżące</span><b class="num">−${zl(sum(varEx))}</b></div>
+        <div class="between"><span class="lbl">Opłaty stałe</span><b class="num">−${zl(sum(billEx))}</b></div>
+        ${depM.length ? `<div class="between"><span class="lbl">Do skarbonek</span><b class="num">−${zl(sum(depM))}</b></div>` : ''}
+      </div>
+      <div class="grid2"><button class="btn sm" style="border:0" onclick="incomeSheet()">+ Wpływ</button><button class="btn sm" style="border:0;color:var(--acc-d)" onclick="correctSheet()">Koryguj saldo</button></div>
+    </section>
+    <button class="btn" onclick="go('goals')" style="justify-content:space-between"><span class="row">${svg('piggy', 20)}Skarbonki</span><span class="num">${zl(savedTotal())} ›</span></button>
+    ${statsSection()}
+    ${inc.length || corr.length ? `<div class="stack" style="gap:8px"><h2>Wpływy i korekty</h2><div class="list">${inc.concat(corr.filter(c => c.date.slice(0, 7) === m)).sort((a, b) => b.date.localeCompare(a.date)).map(i => `<button class="item" onclick="incomeSheet('${i.id}')"><span class="ic" style="background:${i.type === 'Korekta' ? 'var(--soft)' : '#DCFCE7'};color:${i.type === 'Korekta' ? 'var(--ink)' : '#166534'}">${i.type === 'Korekta' ? '±' : '↑'}</span><span class="t"><b>${esc(i.desc)}</b><span class="small muted">${esc(i.who)} · ${i.date.slice(8)}.${i.date.slice(5, 7)}</span></span><span class="num" style="font-weight:600;color:${i.amount >= 0 ? 'var(--ok)' : 'var(--neg)'}">${i.amount >= 0 ? '+' : '−'}${zl(Math.abs(i.amount))}</span></button>`).join('')}</div></div>` : ''}
+    <div class="stack" style="gap:8px"><div class="between"><h2>Limity kategorii</h2><div class="row" style="gap:14px"><button class="link" onclick="catSheet()">+ Nowa</button><button class="link" onclick="go('cats')">Wszystkie</button></div></div>
+      <div class="card" style="padding:4px 16px">${limited.length ? limited.map(c => { const s = byCat[c.name] || 0, p = c.limit ? Math.round(s / c.limit * 100) : 0, over = c.limit && s > c.limit; return `<button class="stack" style="gap:8px;padding:12px 0;border:0;border-bottom:1px solid var(--soft);background:none;width:100%;text-align:left" onclick="catSheet('${esc(c.name)}')"><div class="between"><b style="font-size:14px">${esc(c.name)}</b><span class="small muted" style="font-size:13px"><b class="num" style="color:${over ? 'var(--warn)' : 'var(--ink)'}">${zl0(s)}</b>${c.limit ? ' / ' + zl0(c.limit) : ''}</span></div>${c.limit ? `<div class="track" style="width:100%"><div style="width:${Math.min(100, p)}%;background:${over ? '#EA580C' : 'var(--acc)'}"></div></div>` : ''}</button>`; }).join('') : '<p class="muted">Brak wydatków w tym miesiącu.</p>'}</div></div>
+    <div class="card stack" style="gap:12px"><div class="between"><h2 style="font-size:15px">Ostatnie 6 miesięcy</h2><span class="small muted">łącznie z opłatami</span></div>
+      <div class="bars">${months.map((mm, i) => `<div><span class="num" style="font-size:10px">${mTotals[i] ? zl0(mTotals[i]).replace(' zł', '') : ''}</span><i style="height:${Math.round(mTotals[i] / maxT * 80)}px;${i === 5 ? 'background:var(--acc)' : ''}"></i><span>${MONTHS_SHORT[Number(mm.slice(5)) - 1]}</span></div>`).join('')}</div></div>
+    ${totalWho ? `<div class="card stack" style="gap:10px"><h2 style="font-size:15px">Kto ile zapłacił w tym miesiącu</h2>
+      <div style="display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px">${members.map((n, i) => `<div style="flex:${byWho[n] || 0};background:${MEMBER_COLORS[i % 4]}"></div>`).join('')}</div>
+      <div class="between small">${members.map(n => `<span><b>${esc(n)}</b> <span class="num">${zl(byWho[n] || 0)}</span></span>`).join('')}</div>
+      ${settle ? `<div class="small muted" style="font-size:13px">${settle}</div>` : ''}</div>` : ''}
+    <a class="btn" href="${esc(D.sheetUrl || '#')}" target="_blank" rel="noopener">Otwórz wspólny arkusz Google</a>
+  </div>`;
+}
+
+function vGoals() {
+  const goals = (D.goals || []).filter(g => g.active);
+  return `<div class="stack">
+    <div class="between"><div class="row"><button class="x" style="background:var(--card)" aria-label="Wróć" onclick="go('budget')">${svg('back', 20, 2.2)}</button><h1>Skarbonki</h1></div>
+      <button class="x" style="background:var(--acc);color:var(--on-acc)" aria-label="Nowy cel" onclick="goalSheet()">${svg('plus', 20, 2.4)}</button></div>
+    <section style="background:var(--teal);color:#fff;border-radius:22px;padding:18px" class="grid2">
+      <div><div class="small" style="color:#CCFBF1">Odłożone łącznie</div><div class="num" style="font-size:24px;font-weight:700">${zl(savedTotal())}</div></div>
+      <div><div class="small" style="color:#CCFBF1">Dostępne saldo</div><div class="num" style="font-size:24px;font-weight:700">${zl(balance())}</div></div>
+      <div class="small" style="grid-column:span 2;color:#CCFBF1">Wpłata do skarbonki przenosi pieniądze z salda, a wypłata je przywraca.</div>
+    </section>
+    ${goals.length ? goals.map((g, i) => {
+      const p = g.target ? Math.min(100, Math.round(g.saved / g.target * 100)) : 0, left = Math.max(0, g.target - g.saved);
+      let hint = left <= 0 ? 'Cel osiągnięty!' : 'Brakuje ' + zl0(left);
+      if (g.deadline && left > 0) { const [y, mo] = g.deadline.split('-').map(Number), n = new Date(); const months = (y - n.getFullYear()) * 12 + (mo - 1 - n.getMonth()) + 1; hint = months > 0 ? 'Odkładaj ' + zl0(left / months) + '/mies.' : 'Termin minął · brakuje ' + zl0(left); }
+      const color = g.color || GOAL_COLORS[i % GOAL_COLORS.length];
+      return `<div class="card stack" style="gap:10px">
+        <div class="between"><button class="link" style="color:var(--ink);font-size:16px;font-weight:700;text-align:left" onclick="goalSheet('${g.id}')">${esc(g.name)}</button><span class="small muted">${g.deadline ? 'do ' + g.deadline.slice(8) + '.' + g.deadline.slice(5, 7) + '.' + g.deadline.slice(0, 4) : 'bez terminu'}</span></div>
+        <div class="between"><b class="num" style="font-size:20px">${zl(g.saved)}</b><span class="small muted" style="font-size:13px">z ${zl0(g.target)} · <b style="color:${color}">${p}%</b></span></div>
+        <div class="goal-bar"><div style="width:${p}%;background:${color}"></div></div>
+        <div class="between"><span class="small muted">${hint}</span><div class="row" style="gap:6px"><button class="btn sm" onclick="depositSheet('${g.id}',-1)">Wypłać</button><button class="btn sm" style="background:${color};color:#fff;border:0" onclick="depositSheet('${g.id}',1)">Wpłać</button></div></div>
+      </div>`;
+    }).join('') : `<div class="card muted">Załóż skarbonkę, np. „Wakacje”, „Poduszka finansowa” albo „Nowe auto”. Ustaw kwotę i opcjonalnie termin, a aplikacja policzy, ile trzeba odkładać co miesiąc.</div>`}
+  </div>`;
+}
+
+function vCats() {
+  const m = curMonth(), ex = monthExp(m);
+  const byCat = {}, cnt = {}; ex.forEach(e => { byCat[e.category] = (byCat[e.category] || 0) + e.amount; cnt[e.category] = (cnt[e.category] || 0) + 1; });
+  return `<div class="stack">
+    <div class="between"><div class="row"><button class="x" style="background:var(--card)" aria-label="Wróć" onclick="go('home')">${svg('back', 20, 2.2)}</button><h1>Kategorie</h1></div>
+      <button class="x" style="background:var(--acc);color:var(--on-acc)" aria-label="Nowa kategoria" onclick="catSheet()">${svg('plus', 20, 2.4)}</button></div>
+    <div class="grid2">${D.categories.map(c => `<button class="card stack" style="gap:8px;border:0;text-align:left;padding:14px" onclick="catSheet('${esc(c.name)}')"><div class="between">${catIcon(c.name, 34)}<span class="small muted">${cnt[c.name] || 0} poz.</span></div><b style="font-size:14px">${esc(c.name)}</b><span class="num" style="font-size:18px;font-weight:600">${zl0(byCat[c.name] || 0)}</span>${c.limit ? `<span class="small muted">limit ${zl0(c.limit)}</span>` : ''}</button>`).join('')}
+      <button class="card" style="border:2px dashed var(--acc-line);color:var(--acc);font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:130px" onclick="catSheet()">${svg('plus', 26, 2.4)}Nowa kategoria</button></div>
+    <p class="small muted">Słowa kluczowe w kategorii decydują o automatycznym przypisaniu produktów z paragonu. Gdy poprawisz kategorię produktu, aplikacja zapamięta to jako regułę.</p>
+  </div>`;
+}
+
+/* ================= Na co najwięcej wydajemy ================= */
+function statRange() {
+  const m = stat.month, months = stat.period === 'm' ? 1 : stat.period === 'q' ? 3 : 12;
+  const list = []; for (let k = months - 1; k >= 0; k--) list.push(shiftMonth(m, -k));
+  const label = months === 1 ? monthName(m) : MONTHS_SHORT[Number(list[0].slice(5)) - 1] + ' ' + list[0].slice(0, 4) + ' – ' + MONTHS_SHORT[Number(m.slice(5)) - 1] + ' ' + m.slice(0, 4);
+  return { months: list, label };
+}
+function prodKey(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ł/g, 'l').replace(/[^a-z0-9%,.]+/g, ' ').trim(); }
+function statsSection() {
+  const R = statRange(), set = {}; R.months.forEach(m => set[m] = 1);
+  const ex = D.expenses.filter(e => set[e.date.slice(0, 7)] && (stat.billsIn || !isBill(e)));
+  const total = sum(ex);
+  const cats = {};
+  ex.forEach(e => {
+    const c = cats[e.category] || (cats[e.category] = { name: e.category, total: 0, n: 0, prods: {} });
+    c.total += e.amount; c.n++;
+    const k = prodKey(e.desc || e.category);
+    const p = c.prods[k] || (c.prods[k] = { name: e.desc || e.category, total: 0, n: 0, last: '', who: {}, store: {} });
+    p.total += e.amount; p.n++;
+    if (e.date >= p.last) { p.last = e.date; p.name = e.desc || e.category; }
+    if (e.who) p.who[e.who] = 1; if (e.store) p.store[e.store] = 1;
+  });
+  const list = Object.values(cats).sort((a, b) => b.total - a.total);
+  const top = list[0];
+  // wykres kołowy
+  const C = 2 * Math.PI * 50; let off = 0;
+  const arcs = list.map(c => { const len = total ? c.total / total * C : 0; const a = `<circle cx="65" cy="65" r="50" stroke="${catColors(c.name)[1]}" stroke-dasharray="${Math.max(0, len - 1.5).toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}"/>`; off += len; return a; }).join('');
+  const per = (k, l) => `<button class="pill ${stat.period === k ? 'on' : ''}" onclick="stat.period='${k}';render()">${l}</button>`;
+  return `<section class="card stack" style="gap:14px" id="stats">
+    <div class="between"><h2>Na co najwięcej wydajemy</h2></div>
+    <div class="chips">${per('m', 'Miesiąc')}${per('q', '3 miesiące')}${per('y', '12 miesięcy')}
+      <button class="pill ${stat.billsIn ? 'on' : ''}" onclick="stat.billsIn=!stat.billsIn;render()">${stat.billsIn ? '✓ ' : ''}z opłatami stałymi</button></div>
+    <div class="between" style="background:var(--soft);border-radius:14px;padding:4px">
+      <button class="x" style="background:var(--card);width:38px;height:38px" aria-label="Wcześniej" onclick="stat.month=shiftMonth(stat.month,-1);render()">${svg('left', 16)}</button>
+      <b style="font-size:14px">${R.label}</b>
+      <button class="x" style="background:var(--card);width:38px;height:38px" aria-label="Później" onclick="stat.month=shiftMonth(stat.month,1);render()" ${stat.month >= curMonth() ? 'disabled' : ''}>${svg('right', 16)}</button>
+    </div>
+    ${!list.length ? '<p class="muted" style="margin:0">Brak wydatków w tym okresie.</p>' : `
+    <div class="row" style="gap:16px;align-items:center">
+      <svg width="130" height="130" viewBox="0 0 130 130" role="img" aria-label="Udział kategorii w wydatkach" style="flex:0 0 auto">
+        <circle cx="65" cy="65" r="50" fill="none" style="stroke:var(--soft)" stroke-width="18"/>
+        <g transform="rotate(-90 65 65)" fill="none" stroke-width="18">${arcs}</g>
+        <text x="65" y="60" text-anchor="middle" font-family="Inter" font-size="11" style="fill:var(--muted)">razem</text>
+        <text x="65" y="79" text-anchor="middle" font-family="Space Grotesk" font-size="16" font-weight="700" style="fill:var(--ink)">${esc(zl0(total))}</text>
+      </svg>
+      <div class="stack" style="gap:6px;flex:1;min-width:0">
+        <span class="small muted">Najwięcej idzie na</span>
+        <b style="font-size:18px">${esc(top.name)}</b>
+        <span class="num" style="font-size:15px">${zl(top.total)} · ${Math.round(top.total / total * 100)}%</span>
+        ${R.months.length > 1 ? `<span class="small muted">średnio ${zl0(total / R.months.length)} / mies.</span>` : ''}
+      </div>
+    </div>
+    <div>${list.map(c => {
+      const col = catColors(c.name), pct = total ? c.total / total * 100 : 0;
+      const prods = Object.values(c.prods).sort((a, b) => b.total - a.total);
+      return `<details class="cat"><summary>${catIcon(c.name)}
+        <span style="flex:1;min-width:0"><span class="between"><b style="font-size:14px">${esc(c.name)}</b><b class="num" style="font-size:14px">${zl(c.total)}</b></span>
+        <span class="between small muted" style="margin-top:2px"><span>${c.n} ${c.n === 1 ? 'pozycja' : c.n % 10 >= 2 && c.n % 10 <= 4 && (c.n % 100 < 10 || c.n % 100 >= 20) ? 'pozycje' : 'pozycji'} · ${prods.length} różnych</span><span>${pct.toFixed(pct < 10 ? 1 : 0).replace('.', ',')}%</span></span>
+        <div class="hbar"><div style="width:${pct}%;background:${col[1]}"></div></div></span>
+        <span class="chev">${svg('chev', 18)}</span></summary>
+        <div style="max-height:420px;overflow-y:auto">${prods.map(p => `<div class="prod"><span class="pn">${esc(p.name)}</span><b class="num">${zl(p.total)}</b>
+          <span class="pm">${p.n}× · śr. ${zl(p.total / p.n)}${Object.keys(p.store).length ? ' · ' + esc(Object.keys(p.store).slice(0, 2).join(', ')) : ''}</span><span class="pm">${Math.round(p.total / c.total * 100)}% kat.</span></div>`).join('')}</div>
+      </details>`;
+    }).join('')}</div>`}
+  </section>`;
+}
+
+/* ================= Formularze ================= */
+function segHtml(id, options, current) {
+  return `<div class="seg" id="${id}" data-val="${esc(current)}">${options.map(o => `<button type="button" class="${o === current ? 'on' : ''}" onclick="segPick('${id}',this,'${esc(o)}')">${esc(o)}</button>`).join('')}</div>`;
+}
+function segPick(id, el, v) { const s = document.getElementById(id); s.dataset.val = v; s.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === el)); }
+function segVal(id) { return document.getElementById(id).dataset.val; }
+function catOptions(sel) { return D.categories.map(c => `<option ${c.name === sel ? 'selected' : ''}>${esc(c.name)}</option>`).join('') + '<option value="__new">+ Nowa kategoria…</option>'; }
+async function newCategory() {
+  const name = (prompt('Nazwa nowej kategorii:') || '').trim();
+  if (!name) return '';
+  const ex = D.categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+  if (ex) return ex.name;
+  busy(true);
+  try { D = await api('saveCategory', { name: name, limit: 0, keywords: '' }); render(); toast('Dodano kategorię „' + name + '”'); return name; }
+  catch (e) { toast(errMsg(e)); return ''; }
+  finally { busy(false); }
+}
+async function pickCatSelect(sel, onPick) {
+  if (sel.value !== '__new') return onPick(sel.value);
+  const n = await newCategory();
+  if (n) onPick(n); else sel.selectedIndex = 0;
+}
+function catGridHtml(cur) {
+  return D.categories.map(c => { const col = catColors(c.name); return `<button type="button" class="catbtn ${c.name === cur ? 'on' : ''}" style="background:${col[0]};color:${col[1]}" onclick="segPickCat(this,'${esc(c.name)}')"><b style="font-size:14px">${esc(catShort(c.name))}</b>${esc(c.name)}</button>`; }).join('')
+    + `<button type="button" class="catbtn" style="background:var(--card);color:var(--acc);border:2px dashed var(--acc-line)" onclick="addCatInGrid()"><b style="font-size:16px">+</b>Nowa</button>`;
+}
+async function addCatInGrid() {
+  const n = await newCategory();
+  if (!n) return;
+  const g = document.getElementById('fCat');
+  g.dataset.val = n; g.innerHTML = catGridHtml(n);
+}
+function sheetHead(title) { return `<div class="between" style="margin-bottom:14px"><button class="x" aria-label="Zamknij" onclick="closeSheet()">${svg('close', 20, 2.2)}</button><h2>${title}</h2><span style="width:44px"></span></div>`; }
+
+function expenseSheet(id) {
+  const e = id ? D.expenses.find(x => x.id === id) : null;
+  const cur = e ? e.category : (D.categories[0] || {}).name;
+  openSheet(sheetHead(e ? 'Edytuj wydatek' : 'Nowy wydatek') + `<div class="stack">
+    <div class="field" style="align-items:center"><label for="fAmt">Kwota (zł)</label><input id="fAmt" class="amount-in num" inputmode="decimal" placeholder="0,00" value="${e ? String(e.amount).replace('.', ',') : ''}"></div>
+    <div class="field"><label>Kategoria</label><div class="catgrid" id="fCat" data-val="${esc(cur)}">${catGridHtml(cur)}</div></div>
+    <div class="field"><label for="fDesc">Opis</label><input id="fDesc" class="in" value="${esc(e ? e.desc : '')}" placeholder="np. Prezent dla mamy"></div>
+    <div class="grid2"><div class="field"><label for="fDate">Data</label><input id="fDate" type="date" class="in" value="${e ? e.date : today()}"></div>
+      <div class="field"><label for="fStore">Sklep (opcjonalnie)</label><input id="fStore" class="in" value="${esc(e ? e.store : '')}"></div></div>
+    <div class="field"><label>Kto zapłacił</label>${segHtml('fWho', whoOptions(), e ? e.who : D.me)}</div>
+    ${e && e.receipt ? `<a class="link" href="${esc(e.receipt)}" target="_blank" rel="noopener">Zobacz zdjęcie paragonu</a>` : ''}
+    <button class="btn pri" style="height:56px" onclick="saveExpense('${id || ''}')">${e ? 'Zapisz zmiany' : 'Zapisz w arkuszu'}</button>
+    ${e ? `<button class="btn danger" onclick="if(confirm('Usunąć ten wydatek?')){closeSheet();act('deleteExpense','${id}')}">${svg('trash', 18)}Usuń wydatek</button>` : ''}
+  </div>`);
+  if (!e) setTimeout(() => document.getElementById('fAmt').focus(), 50);
+}
+function segPickCat(el, v) { const g = document.getElementById('fCat'); g.dataset.val = v; g.querySelectorAll('.catbtn').forEach(b => b.classList.toggle('on', b === el)); }
+async function saveExpense(id) {
+  const e = { amount: num(val('fAmt')), category: document.getElementById('fCat').dataset.val, desc: val('fDesc').trim(), date: val('fDate') || today(), store: val('fStore').trim(), who: segVal('fWho') };
+  if (!(e.amount > 0)) return toast('Podaj kwotę');
+  closeSheet();
+  const ok = id ? await act('updateExpense', id, e) : await act('addExpense', e);
+  if (ok) toast(id ? 'Zapisano zmiany' : 'Dodano ' + zl(e.amount));
+}
+
+function billSheet(id) {
+  const b = id ? D.bills.find(x => x.id === id) : null;
+  openSheet(sheetHead(b ? 'Edytuj opłatę' : 'Nowa opłata stała') + `<div class="stack">
+    <div class="field"><label for="bName">Nazwa</label><input id="bName" class="in" value="${esc(b ? b.name : '')}" placeholder="np. Czynsz"></div>
+    <div class="grid2"><div class="field"><label for="bAmt">Kwota (zł)</label><input id="bAmt" class="in num" inputmode="decimal" value="${b ? String(b.amount).replace('.', ',') : ''}"></div>
+      <div class="field"><label for="bDay">Dzień płatności</label><input id="bDay" class="in" type="number" min="1" max="31" value="${b ? b.day : 10}"></div></div>
+    <div class="field"><label for="bCat">Kategoria</label><select id="bCat" class="in" onchange="pickCatSelect(this, v => { const s = document.getElementById('bCat'); s.innerHTML = catOptions(v); })">${catOptions(b ? b.category : 'Rachunki')}</select></div>
+    <button class="btn pri" style="height:56px" onclick="saveBill('${id || ''}')">Zapisz</button>
+    ${b ? `<button class="btn danger" onclick="if(confirm('Usunąć opłatę? Zapisane płatności zostaną w historii.')){closeSheet();act('deleteBill','${id}')}">${svg('trash', 18)}Usuń opłatę</button>` : ''}
+  </div>`);
+}
+function saveBill(id) {
+  const b = { id: id || '', name: val('bName').trim(), amount: num(val('bAmt')), day: Number(val('bDay')) || 1, category: val('bCat') };
+  if (!b.name || !(b.amount > 0)) return toast('Podaj nazwę i kwotę');
+  closeSheet(); act('saveBill', b);
+}
+
+function incomeSheet(id) {
+  const i = id ? D.incomes.find(x => x.id === id) : null;
+  if (i) {
+    openSheet(sheetHead(i.type === 'Korekta' ? 'Korekta salda' : 'Wpływ') + `<div class="stack">
+      <div class="card" style="background:var(--soft)"><b class="num" style="font-size:24px">${i.amount >= 0 ? '+' : '−'}${zl(Math.abs(i.amount))}</b><div class="muted">${esc(i.desc)} · ${esc(i.who)} · ${i.date}</div></div>
+      <button class="btn danger" onclick="if(confirm('Usunąć ten wpis? Saldo zostanie przeliczone.')){closeSheet();act('deleteIncome','${id}')}">${svg('trash', 18)}Usuń</button></div>`);
+    return;
+  }
+  openSheet(sheetHead('Nowy wpływ') + `<div class="stack">
+    <div class="field" style="align-items:center"><label for="iAmt">Kwota (zł)</label><input id="iAmt" class="amount-in num" inputmode="decimal" placeholder="0,00"></div>
+    <div class="field"><label for="iDesc">Opis</label><input id="iDesc" class="in" placeholder="np. Wynagrodzenie" value="Wynagrodzenie"></div>
+    <div class="field"><label for="iDate">Data</label><input id="iDate" type="date" class="in" value="${today()}"></div>
+    <div class="field"><label>Czyj wpływ</label>${segHtml('iWho', whoOptions(), D.me)}</div>
+    <button class="btn pri" style="height:56px" onclick="saveIncome()">Dodaj wpływ</button></div>`);
+  setTimeout(() => document.getElementById('iAmt').focus(), 50);
+}
+function saveIncome() {
+  const i = { amount: num(val('iAmt')), desc: val('iDesc').trim() || 'Wpływ', date: val('iDate') || today(), who: segVal('iWho') };
+  if (!(i.amount > 0)) return toast('Podaj kwotę');
+  closeSheet(); act('addIncome', i).then(ok => ok && toast('Saldo zwiększone o ' + zl(i.amount)));
+}
+
+function correctSheet() {
+  const b = balance();
+  openSheet(sheetHead('Korekta salda') + `<div class="stack">
+    <p class="muted" style="margin:0">Wpisz faktyczny stan konta (np. z aplikacji banku). Różnica zapisze się jako wpis „Korekta salda”, który możesz później usunąć.</p>
+    <div class="card" style="background:var(--soft)"><div class="small muted">Saldo w aplikacji</div><b class="num" style="font-size:22px">${zl(b)}</b></div>
+    <div class="field" style="align-items:center"><label for="cAmt">Faktyczne saldo (zł)</label><input id="cAmt" class="amount-in num" inputmode="decimal" value="${String(b).replace('.', ',')}" oninput="cPrev()"></div>
+    <div id="cDiff" class="small muted" style="text-align:center;font-size:14px">Bez zmian</div>
+    <div class="field"><label for="cNote">Notatka</label><input id="cNote" class="in" value="Korekta salda"></div>
+    <button class="btn pri" style="height:56px" onclick="saveCorrection()">Zapisz korektę</button></div>`);
+  setTimeout(() => { const el = document.getElementById('cAmt'); el.focus(); el.select(); }, 50);
+}
+function cPrev() { const d = r2(num(val('cAmt')) - balance()); document.getElementById('cDiff').innerHTML = d === 0 ? 'Bez zmian' : `Różnica: <b class="num" style="color:${d > 0 ? 'var(--ok)' : 'var(--neg)'}">${d > 0 ? '+' : '−'}${zl(Math.abs(d))}</b>`; }
+function saveCorrection() {
+  const target = num(val('cAmt'));
+  if (r2(target - balance()) === 0) { closeSheet(); return toast('Saldo się zgadza'); }
+  closeSheet(); act('correctBalance', target, val('cNote').trim() || 'Korekta salda').then(ok => ok && toast('Saldo ustawione na ' + zl(target)));
+}
+
+function settingsSheet() {
+  const s = D.settings;
+  openSheet(sheetHead('Ustawienia budżetu') + `<div class="stack">
+    <div class="field"><label for="sBud">Miesięczny budżet na wydatki bieżące (zł)</label><input id="sBud" class="in num" inputmode="decimal" value="${String(s.budget).replace('.', ',')}"></div>
+    <div class="field"><label for="sStart">Saldo początkowe konta (zł)</label><input id="sStart" class="in num" inputmode="decimal" value="${String(s.startBalance).replace('.', ',')}"></div>
+    <p class="small muted" style="margin:0">Saldo = saldo początkowe + wpływy − wydatki − wpłaty do skarbonek. Do bieżących poprawek używaj „Koryguj saldo”, bo wtedy zostaje ślad w historii.</p>
+    <div class="field"><label>Motyw</label>${themePicker()}</div>
+    <div class="card" style="background:var(--soft)"><div class="small muted">Skanowanie paragonów</div><b>${D.ai ? 'AI (Gemini): dokładne odczytywanie' : 'OCR Dysku Google'}</b>${D.ai ? '' : '<div class="small muted">Dokładniejsze odczytywanie: dodaj klucz GEMINI_API_KEY we właściwościach skryptu (instrukcja w pliku INSTRUKCJA.md).</div>'}
+      <button class="btn sm" style="margin-top:10px;width:100%" onclick="testAi(this)">Testuj połączenie z AI</button><div id="aiRes" class="small" style="margin-top:8px"></div></div>
+    <button class="btn pri" style="height:56px" onclick="closeSheet();act('saveSettings',{budget:num(val('sBud')),startBalance:num(val('sStart'))})">Zapisz</button>
+    ${IS_API ? `<div class="small muted" style="text-align:center">Zalogowano jako <b>${esc(CFG.user)}</b></div><button class="btn danger" onclick="logout()">Odłącz ten telefon</button>` : ''}</div>`);
+}
+
+async function testAi(btn) {
+  const out = document.getElementById('aiRes');
+  btn.disabled = true; out.style.color = 'var(--muted)'; out.textContent = 'Łączę się z Gemini…';
+  try {
+    const r = await api('testGemini');
+    out.style.color = r.ok ? 'var(--ok)' : 'var(--neg)'; out.textContent = r.message;
+  } catch (e) { out.style.color = 'var(--neg)'; out.textContent = errMsg(e); }
+  finally { btn.disabled = false; }
+}
+function catSheet(name) {
+  const c = name ? D.categories.find(x => x.name === name) : null;
+  openSheet(sheetHead(c ? esc(c.name) : 'Nowa kategoria') + `<div class="stack">
+    ${c ? '' : '<div class="field"><label for="kName">Nazwa</label><input id="kName" class="in"></div>'}
+    <div class="field"><label for="kLim">Miesięczny limit (zł, 0 = brak)</label><input id="kLim" class="in num" inputmode="decimal" value="${c ? String(c.limit).replace('.', ',') : '0'}"></div>
+    <div class="field"><label for="kKw">Słowa kluczowe (po przecinku, bez polskich znaków też działa)</label><textarea id="kKw" class="in" style="height:110px;padding:10px 14px">${esc(c ? c.keywords : '')}</textarea></div>
+    <button class="btn pri" style="height:56px" onclick="saveCat('${c ? esc(c.name) : ''}')">${c ? 'Zapisz' : 'Dodaj kategorię'}</button>
+    ${c && c.name !== 'Inne' ? `<button class="btn danger" onclick="delCat('${esc(c.name)}')">${svg('trash', 18)}Usuń kategorię</button>` : ''}</div>`);
+  if (!c) setTimeout(() => document.getElementById('kName').focus(), 50);
+}
+function delCat(name) {
+  const n = D.expenses.filter(e => e.category === name).length;
+  if (!confirm(n ? `Usunąć kategorię „${name}”? ${n} wydatków zostanie przeniesionych do „Inne”.` : `Usunąć kategorię „${name}”?`)) return;
+  closeSheet(); act('deleteCategory', name, 'Inne');
+}
+function saveCat(name) {
+  const c = { name: name || val('kName').trim(), limit: num(val('kLim')), keywords: val('kKw') };
+  if (!c.name) return toast('Podaj nazwę');
+  if (!name && D.categories.some(x => x.name.toLowerCase() === c.name.toLowerCase())) return toast('Taka kategoria już istnieje');
+  closeSheet(); act('saveCategory', c);
+}
+
+function goalSheet(id) {
+  const g = id ? D.goals.find(x => x.id === id) : null;
+  const cur = g && g.color ? g.color : GOAL_COLORS[(D.goals || []).length % GOAL_COLORS.length];
+  openSheet(sheetHead(g ? 'Edytuj skarbonkę' : 'Nowa skarbonka') + `<div class="stack">
+    <div class="field"><label for="gName">Na co oszczędzacie?</label><input id="gName" class="in" value="${esc(g ? g.name : '')}" placeholder="np. Wakacje 2027"></div>
+    <div class="grid2"><div class="field"><label for="gT">Kwota docelowa (zł)</label><input id="gT" class="in num" inputmode="decimal" value="${g ? String(g.target).replace('.', ',') : ''}"></div>
+      <div class="field"><label for="gD">Termin (opcjonalnie)</label><input id="gD" type="date" class="in" value="${g ? g.deadline : ''}"></div></div>
+    <div class="field"><label>Kolor</label><div class="row" id="gC" data-val="${cur}">${GOAL_COLORS.map(c => `<button type="button" aria-label="Kolor ${c}" onclick="document.getElementById('gC').dataset.val='${c}';this.parentNode.querySelectorAll('button').forEach(b=>b.style.outline='none');this.style.outline='3px solid ${c}'" style="width:40px;height:40px;border-radius:20px;border:3px solid #fff;background:${c};outline:${c === cur ? '3px solid ' + c : 'none'}"></button>`).join('')}</div></div>
+    <button class="btn pri" style="height:56px" onclick="saveGoal('${id || ''}')">Zapisz</button>
+    ${g ? `<button class="btn danger" onclick="if(confirm('Usunąć skarbonkę? Odłożone ${zl(g.saved)} wróci do salda.')){closeSheet();act('deleteGoal','${id}')}">${svg('trash', 18)}Usuń skarbonkę</button>` : ''}</div>`);
+}
+function saveGoal(id) {
+  const g = { id: id || '', name: val('gName').trim(), target: num(val('gT')), deadline: val('gD'), color: document.getElementById('gC').dataset.val };
+  if (!g.name || !(g.target > 0)) return toast('Podaj nazwę i kwotę celu');
+  closeSheet(); act('saveGoal', g);
+}
+function depositSheet(id, sign) {
+  const g = D.goals.find(x => x.id === id);
+  openSheet(sheetHead((sign > 0 ? 'Wpłata: ' : 'Wypłata: ') + esc(g.name)) + `<div class="stack">
+    <div class="field" style="align-items:center"><label for="dAmt">Kwota (zł)</label><input id="dAmt" class="amount-in num" inputmode="decimal" placeholder="0,00"></div>
+    <div class="grid3">${[100, 200, 500].map(v => `<button class="btn sm" onclick="document.getElementById('dAmt').value='${v}'">${v} zł</button>`).join('')}</div>
+    <p class="small muted" style="margin:0;text-align:center">${sign > 0 ? 'Dostępne saldo: ' + zl(balance()) : 'W skarbonce: ' + zl(g.saved)}</p>
+    <button class="btn pri" style="height:56px" onclick="saveDeposit('${id}',${sign})">${sign > 0 ? 'Wpłać do skarbonki' : 'Wypłać na konto'}</button></div>`);
+  setTimeout(() => document.getElementById('dAmt').focus(), 50);
+}
+function saveDeposit(id, sign) {
+  const a = num(val('dAmt'));
+  if (!(a > 0)) return toast('Podaj kwotę');
+  closeSheet(); act('addToGoal', id, sign * a, '').then(ok => ok && toast(sign > 0 ? 'Odłożono ' + zl(a) : 'Wypłacono ' + zl(a)));
+}
+
+/* ================= Skan paragonu ================= */
+function startScan() {
+  openSheet(sheetHead('Skanuj paragon') + `<div class="stack">
+    <p class="muted" style="margin:0">Zrób zdjęcie całego paragonu na jasnym, płaskim tle. Aplikacja odczyta produkty i przypisze im kategorie.</p>
+    <button class="btn pri" style="height:60px" onclick="document.getElementById('cam').click()">${svg('scan', 22)}Zrób zdjęcie</button>
+    <button class="btn" onclick="document.getElementById('gal').click()">${svg('img', 20)}Wybierz z galerii</button>
+    <button class="btn" onclick="closeSheet();expenseSheet()">${svg('plus', 20)}Dodaj ręcznie</button></div>`);
+}
+['cam', 'gal'].forEach(id => document.getElementById(id).addEventListener('change', async ev => {
+  const f = ev.target.files && ev.target.files[0]; ev.target.value = '';
+  if (!f) return;
+  openSheet(`<div class="stack" style="text-align:center;padding:30px 0"><div class="spin"></div><h2>Odczytuję paragon…</h2><p class="muted">To zwykle trwa 5–15 sekund.</p></div>`);
+  try {
+    const b64 = await shrink(f, 1800);
+    const r = await api('scanReceipt', b64, 'image/jpeg');
+    scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', engine: r.engine, raw: r.raw || '', aiError: r.aiError || '', who: D.me,
+      items: (r.items || []).map(it => ({ name: it.name, price: it.price, category: it.category, orig: it.category })) };
+    if (!scanState.items.length) scanState.items.push({ name: '', price: 0, category: (D.categories[0] || {}).name, orig: '' });
+    reviewSheet();
+  } catch (e) { closeSheet(); toast('Nie udało się odczytać: ' + errMsg(e)); }
+}));
+function shrink(file, max) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      res(c.toDataURL('image/jpeg', 0.85).split(',')[1]);
+    };
+    img.onerror = () => rej(new Error('Nie można wczytać zdjęcia'));
+    img.src = url;
+  });
+}
+function reviewSheet() {
+  const s = scanState, total = r2(sum(s.items, 'price'));
+  const mismatch = s.total && Math.abs(total - s.total) > 0.05;
+  const byCat = {}; s.items.forEach(it => byCat[it.category] = (byCat[it.category] || 0) + num(it.price));
+  openSheet(sheetHead(`Rozpoznano ${s.items.length} ${s.items.length === 1 ? 'produkt' : s.items.length < 5 ? 'produkty' : 'produktów'}`) + `<div class="stack">
+    <div class="grid2"><div class="field"><label for="rStore">Sklep</label><input id="rStore" class="in" value="${esc(s.store)}" oninput="scanState.store=this.value"></div>
+      <div class="field"><label for="rDate">Data</label><input id="rDate" type="date" class="in" value="${esc(s.date)}" oninput="scanState.date=this.value"></div></div>
+    <div class="card" style="background:var(--soft)"><div class="between"><span class="muted small">Suma pozycji</span><b class="num" style="font-size:24px">${zl(total)}</b></div>
+      <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;margin-top:10px">${Object.keys(byCat).map(c => `<div style="flex:${Math.max(0, byCat[c])};background:${catColors(c)[1]}"></div>`).join('')}</div>
+      <div class="small muted" style="margin-top:8px">${Object.keys(byCat).map(c => esc(c) + ' ' + zl(byCat[c])).join(' · ')}</div></div>
+    ${mismatch ? `<div class="alert">Suma z paragonu to <b>${zl(s.total)}</b>, a pozycje dają ${zl(total)}. Sprawdź ceny albo dopisz brakującą pozycję.</div>` : ''}
+    <div>${s.items.map((it, i) => `<div class="recrow">
+      <input class="in" aria-label="Produkt ${i + 1}" value="${esc(it.name)}" oninput="scanState.items[${i}].name=this.value">
+      <input class="in num" aria-label="Cena ${i + 1}" inputmode="decimal" style="text-align:right" value="${String(it.price).replace('.', ',')}" onchange="scanState.items[${i}].price=num(this.value);reviewSheet()">
+      <button class="x" style="width:30px;height:30px;background:none" aria-label="Usuń pozycję" onclick="scanState.items.splice(${i},1);reviewSheet()">${svg('close', 16)}</button>
+      <select class="in" aria-label="Kategoria ${i + 1}" style="background:${catColors(it.category)[0]};color:${catColors(it.category)[1]};font-weight:600" onchange="pickCatSelect(this, v => { scanState.items[${i}].category = v; reviewSheet(); })">${catOptions(it.category)}</select>
+    </div>`).join('')}</div>
+    <button class="btn sm" onclick="scanState.items.push({name:'',price:0,category:'${esc((D.categories[0] || {}).name || 'Inne')}',orig:''});reviewSheet()">+ Dodaj pozycję</button>
+    <div class="field"><label>Kto zapłacił</label>${segHtml('rWho', whoOptions(), s.who)}</div>
+    <p class="small muted" style="margin:0">Zmienione kategorie aplikacja zapamięta i następnym razem przypisze je sama. Odczyt: ${s.engine === 'ai' ? 'AI (Gemini)' : 'OCR Dysku Google'}.</p>
+    ${s.aiError ? `<div class="alert">AI nie zadziałało, więc użyto zwykłego OCR. Błąd: <b>${esc(s.aiError)}</b></div>` : ''}
+    ${s.engine === 'ocr' && !s.aiError && !D.ai ? `<div class="alert" style="background:var(--acc-soft);border-color:var(--acc-line);color:var(--link)">Dokładniejszy odczyt (nazwy, ilości, rabaty, kategorie) daje AI Gemini: wystarczy dodać darmowy klucz <b>GEMINI_API_KEY</b> we właściwościach skryptu.</div>` : ''}
+    ${s.raw ? `<details><summary class="small muted" style="cursor:pointer">Pokaż tekst odczytany z paragonu</summary><pre style="white-space:pre-wrap;font-size:11px;background:var(--soft);border-radius:10px;padding:10px;max-height:240px;overflow:auto">${esc(s.raw)}</pre></details>` : ''}
+    <button class="btn pri" style="height:56px" onclick="saveScan()">Zapisz ${s.items.length} pozycji · ${zl(total)}</button></div>`);
+}
+function saveScan() {
+  const s = scanState; s.who = segVal('rWho');
+  const items = s.items.filter(it => it.name.trim() && num(it.price) !== 0).map(it => ({ name: it.name.trim(), price: num(it.price), category: it.category, learn: !!it.orig && it.category !== it.orig }));
+  if (!items.length) return toast('Brak pozycji do zapisania');
+  closeSheet();
+  act('addExpenses', items, { date: s.date, store: s.store.trim(), who: s.who, receipt: s.receipt }).then(ok => ok && toast('Zapisano paragon: ' + zl(sum(items, 'price'))));
+}
+
+/* ================= Tryb demo (bez Google) ================= */
+const Mock = (function () {
+  const KEY = 'dw_demo_v1';
+  let S = null;
+  try { S = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { S = null; }
+  const id = () => Math.random().toString(36).slice(2, 10);
+  const m0 = curMonth(), m1 = shiftMonth(m0, -1), t = today();
+  const d = (m, day) => m + '-' + pad(Math.min(day, 28));
+  if (!S) {
+    const cats = [['Spożywcze', 'mleko, ser, chleb, jogurt, maslo, jaja, kawa, jablk', 2000], ['Chemia i higiena', 'plyn, proszek, pasta do zeb, szampon', 400], ['Dzieci', 'pieluch, chusteczki naw', 600], ['Zwierzęta', 'karma, zwirek', 200], ['Transport', 'pb95, paliwo, myjnia', 800], ['Zdrowie', 'apteka, witamin', 300], ['Dom', 'zarowk, bateri', 500], ['Restauracje', 'pizza, obiad', 300], ['Prezenty', 'prezent', 0], ['Rachunki', 'czynsz, prad', 0], ['Inne', '', 0]];
+    const bills = [['Czynsz', 1450, 10], ['Rata kredytu', 1800, 5], ['Przedszkole', 650, 10], ['Prąd', 210, 20], ['Gaz', 160, 22], ['Ubezpieczenie auta', 145, 25], ['Telefony', 90, 15], ['Internet', 69, 12]].map(b => ({ id: id(), name: b[0], amount: b[1], day: b[2], category: 'Rachunki', active: true }));
+    const e = (date, amount, category, desc, who, source, store) => ({ id: id(), date, amount, category, desc, who, source: source || 'Ręcznie', store: store || '', receipt: '', billKey: '', added: Date.now() - Math.random() * 1e6 });
+    const exps = [
+      e(d(m0, 3), 186.37, 'Spożywcze', 'Zakupy tygodniowe', 'Żona', 'Paragon', 'Market'), e(d(m0, 4), 245, 'Transport', 'Paliwo', 'Ty', 'Paragon', 'Stacja'),
+      e(d(m0, 6), 38.9, 'Zdrowie', 'Apteka', 'Żona'), e(d(m0, 7), 94, 'Restauracje', 'Pizzeria', 'Wspólne'), e(t, 6.98, 'Spożywcze', 'Mleko 3,2% 1 l', 'Żona', 'Paragon', 'Market'),
+      e(t, 37.99, 'Dzieci', 'Pieluchy r. 4', 'Żona', 'Paragon', 'Market'), e(t, 21.99, 'Chemia i higiena', 'Pasta do zębów', 'Żona', 'Paragon', 'Market'),
+      e(d(m1, 12), 420, 'Spożywcze', 'Zakupy', 'Ty'), e(d(m1, 18), 300, 'Transport', 'Paliwo', 'Ty'), e(d(m1, 22), 160, 'Dom', 'Żarówki', 'Ty')
+    ];
+    bills.slice(0, 3).forEach(b => exps.push(Object.assign(e(d(m0, b.day), b.amount, 'Rachunki', b.name, 'Ty', BILL_SOURCE), { billKey: b.id + '|' + m0 })));
+    const goals = [{ id: id(), name: 'Wakacje', target: 8000, deadline: (Number(m0.slice(0, 4)) + 1) + '-06-30', color: '#F59E0B', active: true }, { id: id(), name: 'Poduszka finansowa', target: 20000, deadline: '', color: '#0F766E', active: true }];
+    S = {
+      me: 'Ty', members: ['Ty', 'Żona'], expenses: exps,
+      incomes: [{ id: id(), date: d(m0, 10), amount: 6500, desc: 'Wynagrodzenie', who: 'Ty', type: 'Wpływ' }, { id: id(), date: d(m0, 10), amount: 4400, desc: 'Wynagrodzenie', who: 'Żona', type: 'Wpływ' }],
+      bills, categories: cats.map(c => ({ name: c[0], keywords: c[1], limit: c[2] })), goals,
+      deposits: [{ id: id(), goalId: goals[0].id, date: d(m1, 11), amount: 3450, who: 'Ty', note: 'Wpłata' }, { id: id(), goalId: goals[1].id, date: d(m1, 11), amount: 12300, who: 'Żona', note: 'Wpłata' }],
+      settings: { budget: 6000, startBalance: 15000, savingsGoal: 0 }, sheetUrl: '#', ai: false
+    };
+  }
+  const out = () => { S.goals.forEach(g => g.saved = r2(sum(S.deposits.filter(x => x.goalId === g.id)))); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } return JSON.parse(JSON.stringify(S)); };
+  const bal = () => r2(S.settings.startBalance + sum(S.incomes) - sum(S.expenses) - sum(S.deposits));
+  return {
+    getData: out,
+    addExpense(e) { S.expenses.push(Object.assign({ id: id(), source: 'Ręcznie', receipt: '', billKey: '', added: Date.now() }, e)); return out(); },
+    addExpenses(items, m) { items.forEach(it => S.expenses.push({ id: id(), date: m.date, amount: it.price, category: it.category, desc: it.name, store: m.store, who: m.who, source: 'Paragon', receipt: '', billKey: '', added: Date.now() })); return out(); },
+    updateExpense(i, e) { Object.assign(S.expenses.find(x => x.id === i), e); return out(); },
+    deleteExpense(i) { S.expenses = S.expenses.filter(x => x.id !== i); return out(); },
+    addIncome(i) { S.incomes.push(Object.assign({ id: id(), type: 'Wpływ' }, i)); return out(); },
+    deleteIncome(i) { S.incomes = S.incomes.filter(x => x.id !== i); return out(); },
+    correctBalance(a, note) { const diff = r2(a - bal()); if (diff) S.incomes.push({ id: id(), date: today(), amount: diff, desc: note, who: S.me, type: 'Korekta' }); return out(); },
+    saveBill(b) { const ex = S.bills.find(x => x.id === b.id); if (ex) Object.assign(ex, b); else S.bills.push(Object.assign({}, b, { id: id(), active: true })); return out(); },
+    deleteBill(i) { S.bills = S.bills.filter(x => x.id !== i); return out(); },
+    toggleBill(bid, m) { const k = bid + '|' + m, ex = S.expenses.find(x => x.billKey === k); if (ex) S.expenses = S.expenses.filter(x => x !== ex); else { const b = S.bills.find(x => x.id === bid); S.expenses.push({ id: id(), date: m === curMonth() ? today() : d(m, b.day), amount: b.amount, category: b.category, desc: b.name, store: '', who: S.me, source: BILL_SOURCE, receipt: '', billKey: k, added: Date.now() }); } return out(); },
+    saveSettings(s) { Object.assign(S.settings, s); return out(); },
+    setTheme() { return true; },
+    testGemini() { return { ok: false, message: 'Tryb demo: test działa dopiero po wdrożeniu w Google Apps Script.' }; },
+    deleteCategory(n, to) { S.categories = S.categories.filter(x => x.name !== n); S.expenses.forEach(e => { if (e.category === n) e.category = to; }); S.bills.forEach(b => { if (b.category === n) b.category = to; }); return out(); },
+    saveCategory(c) { const ex = S.categories.find(x => x.name === c.name); if (ex) Object.assign(ex, c); else S.categories.push(c); return out(); },
+    saveGoal(g) { const ex = S.goals.find(x => x.id === g.id); if (ex) Object.assign(ex, g); else S.goals.push(Object.assign({}, g, { id: id(), active: true })); return out(); },
+    deleteGoal(i) { S.goals = S.goals.filter(x => x.id !== i); S.deposits = S.deposits.filter(x => x.goalId !== i); return out(); },
+    addToGoal(g, a) { const saved = sum(S.deposits.filter(x => x.goalId === g)); if (a < 0 && -a > saved) throw new Error('W skarbonce jest tylko ' + zl(saved)); S.deposits.push({ id: id(), goalId: g, date: today(), amount: a, who: S.me, note: '' }); return out(); },
+    scanReceipt() { return { store: 'Market (demo)', date: today(), total: 89.45, engine: 'demo', receiptUrl: '', items: [{ name: 'Mleko 3,2% 1 l', price: 6.98, category: 'Spożywcze' }, { name: 'Chleb żytni', price: 7.49, category: 'Spożywcze' }, { name: 'Kawa ziarnista 1 kg', price: 59.99, category: 'Spożywcze' }, { name: 'Płyn do naczyń', price: 11.49, category: 'Chemia i higiena' }, { name: 'Bateria AA', price: 3.5, category: 'Inne' }] }; }
+  };
+})();
+
+/* ================= Start ================= */
+function boot() {
+  api('getData').then(d => { D = d; if (d.theme && d.theme !== theme) applyTheme(d.theme); render(); })
+    .catch(e => { if (IS_API) setupScreen('Nie udało się połączyć: ' + errMsg(e)); else document.getElementById('app').innerHTML = `<div class="card"><h2>Nie udało się wczytać danych</h2><p class="muted">${esc(errMsg(e))}</p></div>`; });
+}
+if (IS_API && !CFG.user) setupScreen();
+else if (IS_DEMO && !window.__demoStart) setupScreen();
+else boot();
+</script>
+</body>
+</html>

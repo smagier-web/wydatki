@@ -1,0 +1,28 @@
+{
+  "name": "Domowe Wydatki",
+  "short_name": "Wydatki",
+  "description": "Wspólny budżet domowy: wydatki, paragony, opłaty i skarbonki",
+  "lang": "pl",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F3F4F6",
+  "theme_color": "#F3F4F6",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
