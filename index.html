@@ -820,7 +820,7 @@ function scanWaitSheet(title) {
   keepAwake(true);
   const t0 = Date.now();
   clearInterval(scanWaitSheet._i);
-  scanWaitSheet._i = setInterval(() => { const el = document.getElementById('scanTimer'); if (el) el.textContent = Math.round((Date.now() - t0) / 1000) + ' s'; else clearInterval(scanWaitSheet._i); }, 1000);
+  scanWaitSheet._i = setInterval(() => { const el = document.getElementById('scanTimer'); if (el) { const sec = Math.round((Date.now() - t0) / 1000); el.textContent = sec + ' s' + (sec > 90 ? ' – długi paragon, jeszcze chwila…' : ''); } else clearInterval(scanWaitSheet._i); }, 1000);
 }
 function scanFailSheet(e) {
   clearInterval(scanWaitSheet._i); keepAwake(false);
@@ -843,7 +843,7 @@ async function runScan() {
   } catch (e) { scanFailSheet(e); }
 }
 function setScanState(r) {
-  scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', fileId: r.fileId || '', engine: r.engine, raw: r.raw || '', aiError: r.aiError || '', voucher: r.voucher || 0, who: (scanState && scanState.who) || D.me,
+  scanState = { store: r.store || '', date: r.date || today(), total: r.total || 0, receipt: r.receiptUrl || '', fileId: r.fileId || '', engine: r.engine, model: r.model || '', timing: r.timing || null, raw: r.raw || '', aiError: r.aiError || '', voucher: r.voucher || 0, who: (scanState && scanState.who) || D.me,
     items: (r.items || []).map(it => ({ name: it.name, price: it.price, category: it.category, orig: it.category })) };
   if (!scanState.items.length) scanState.items.push({ name: '', price: 0, category: (D.categories[0] || {}).name, orig: '' });
 }
@@ -896,7 +896,7 @@ function reviewSheet() {
     </div>`).join('')}</div>
     <button class="btn sm" onclick="scanState.items.push({name:'',price:0,category:'${esc((D.categories[0] || {}).name || 'Inne')}',orig:''});reviewSheet()">+ Dodaj pozycję</button>
     <div class="field"><label>Kto zapłacił</label>${segHtml('rWho', whoOptions(), s.who)}</div>
-    <p class="small muted" style="margin:0">Zmienione kategorie aplikacja zapamięta i następnym razem przypisze je sama. Odczyt: ${s.engine === 'ai' ? 'AI (Gemini)' : 'OCR Dysku Google'}.</p>
+    <p class="small muted" style="margin:0">Zmienione kategorie aplikacja zapamięta i następnym razem przypisze je sama. Odczyt: ${s.engine === 'ai' ? 'AI (' + esc(s.model || 'Gemini') + ')' : 'OCR Dysku Google'}${s.timing ? ' · ' + s.timing.totalS + ' s' : ''}.</p>
     ${s.aiError ? `<div class="alert">AI nie zadziałało, więc użyto zwykłego OCR. Błąd: <b>${esc(s.aiError)}</b></div>` : ''}
     ${s.engine === 'ocr' && !s.aiError && !D.ai ? `<div class="alert" style="background:var(--acc-soft);border-color:var(--acc-line);color:var(--link)">Dokładniejszy odczyt (nazwy, ilości, rabaty, kategorie) daje AI Gemini: wystarczy dodać darmowy klucz <b>GEMINI_API_KEY</b> we właściwościach skryptu.</div>` : ''}
     ${s.raw ? `<details><summary class="small muted" style="cursor:pointer">Pokaż tekst odczytany z paragonu</summary><pre style="white-space:pre-wrap;font-size:11px;background:var(--soft);border-radius:10px;padding:10px;max-height:240px;overflow:auto">${esc(s.raw)}</pre></details>` : ''}
