@@ -19,6 +19,10 @@
 :root{--bg:#EEEAFB;--card:#FFFFFF;--ink:#1B1530;--muted:#6E6787;--line:#E6E1F5;--soft:#F4F1FC;--input:#F7F5FD;--acc:#7448E8;--acc-2:#9A6BFF;--acc-d:#5A30C8;--link:#6B3FE0;--on-acc:#FFFFFF;--strong:#2A1F4D;--acc-soft:#EFE9FF;--acc-line:#D6C9FF;--hero-lbl:#E9E1FF;--warn:#D9622B;--warn-bg:#FFF1E8;--warn-line:#FFD5BE;--warn-ink:#B44A17;--ok:#2F8F4E;--neg:#D6334F;--danger-bg:#FFEDF0;--danger-line:#FBC9D2;--bar:#DCD5F3;--teal:#7448E8;--shadow:rgba(60,30,140,.10);color-scheme:light}
 [data-theme="dark"]{--bg:#110C1F;--card:#1B1530;--ink:#F3F0FF;--muted:#A79FC4;--line:#2C2448;--soft:#231B3C;--input:#160F28;--acc:#8E66FF;--acc-2:#A98AFF;--acc-d:#C7B4FF;--link:#BBA4FF;--on-acc:#FFFFFF;--strong:#231B3C;--acc-soft:#2A2050;--acc-line:#4A3A86;--hero-lbl:#E9E1FF;--warn:#FF9A62;--warn-bg:#2E1A12;--warn-line:#6B3418;--warn-ink:#FFB58C;--ok:#5FD08A;--neg:#FF7A90;--danger-bg:#2E1219;--danger-line:#6B1F2E;--bar:#3A3060;--teal:#8E66FF;--shadow:rgba(0,0,0,.45);color-scheme:dark}
 [data-theme="pink"]{--bg:#FBEAF3;--card:#FFFFFF;--ink:#2A0F1F;--muted:#86566F;--line:#F6D8E7;--soft:#FDF1F7;--input:#FFF7FB;--acc:#D63384;--acc-2:#F06BAA;--acc-d:#A61E63;--link:#C2276F;--on-acc:#FFFFFF;--strong:#4A1430;--acc-soft:#FDE5F1;--acc-line:#F6B6D4;--hero-lbl:#FFE3F0;--warn:#D9622B;--warn-bg:#FFF1E8;--warn-line:#FFD5BE;--warn-ink:#B44A17;--ok:#2F8F4E;--neg:#C81E4A;--danger-bg:#FFEDF0;--danger-line:#FBC9D2;--bar:#F4C6DC;--teal:#D63384;--shadow:rgba(140,30,80,.12);color-scheme:light}
+[data-theme="blue"]{--bg:#E8EFFB;--card:#FFFFFF;--ink:#0F1B33;--muted:#5B6B86;--line:#DCE5F4;--soft:#F1F5FC;--input:#F6F9FE;--acc:#2F6BEB;--acc-2:#5B93FF;--acc-d:#1F4FC0;--link:#2459D6;--on-acc:#FFFFFF;--strong:#1A2A4D;--acc-soft:#E6EEFF;--acc-line:#C2D5FF;--hero-lbl:#E3ECFF;--warn:#D9622B;--warn-bg:#FFF1E8;--warn-line:#FFD5BE;--warn-ink:#B44A17;--ok:#2F8F4E;--neg:#D6334F;--danger-bg:#FFEDF0;--danger-line:#FBC9D2;--bar:#D3DFF5;--teal:#2F6BEB;--shadow:rgba(20,50,120,.10);color-scheme:light}
+[data-theme="blue-dark"]{--bg:#0A1120;--card:#131C30;--ink:#EEF3FF;--muted:#98A6C2;--line:#22304C;--soft:#1A2540;--input:#0E1628;--acc:#3F7BFA;--acc-2:#6E9FFF;--acc-d:#2456CF;--link:#9DBDFF;--on-acc:#FFFFFF;--strong:#1A2540;--acc-soft:#182A52;--acc-line:#34508A;--hero-lbl:#E3ECFF;--warn:#FF9A62;--warn-bg:#2E1A12;--warn-line:#6B3418;--warn-ink:#FFB58C;--ok:#5FD08A;--neg:#FF7A90;--danger-bg:#2E1219;--danger-line:#6B1F2E;--bar:#2C3B5E;--teal:#3F7BFA;--shadow:rgba(0,0,0,.45);color-scheme:dark}
+[data-theme="lime"]{--bg:#F0F4E2;--card:#FFFFFF;--ink:#1A2210;--muted:#626D4F;--line:#E1E8CC;--soft:#F5F8EA;--input:#F9FBF1;--acc:#B4E22A;--acc-2:#D6F65E;--acc-d:#8DB816;--link:#4A7300;--on-acc:#1A2600;--strong:#2A3510;--acc-soft:#EEF7D2;--acc-line:#CFE88A;--hero-lbl:#34460A;--warn:#D9622B;--warn-bg:#FFF1E8;--warn-line:#FFD5BE;--warn-ink:#B44A17;--ok:#2F8F4E;--neg:#D6334F;--danger-bg:#FFEDF0;--danger-line:#FBC9D2;--bar:#DCE6BE;--teal:#4A7300;--shadow:rgba(60,80,10,.12);color-scheme:light}
+[data-theme="lime-dark"]{--bg:#0D1109;--card:#161C10;--ink:#F1F7E6;--muted:#A3AE8F;--line:#27311A;--soft:#1D2514;--input:#11160B;--acc:#C3F03C;--acc-2:#DBFF6E;--acc-d:#9CC81E;--link:#CBF25A;--on-acc:#172000;--strong:#1D2514;--acc-soft:#25321A;--acc-line:#4A6420;--hero-lbl:#2E3E05;--warn:#FF9A62;--warn-bg:#2E1A12;--warn-line:#6B3418;--warn-ink:#FFB58C;--ok:#5FD08A;--neg:#FF7A90;--danger-bg:#2E1219;--danger-line:#6B1F2E;--bar:#34421F;--teal:#C3F03C;--shadow:rgba(0,0,0,.45);color-scheme:dark}
 html,body{transition:background-color .25s}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Onest,system-ui,-apple-system,sans-serif;font-size:15px;-webkit-font-smoothing:antialiased}
@@ -47,13 +51,13 @@ h2{margin:0;font-size:16px;font-weight:600;letter-spacing:-.2px}
 .item .t b{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
 .hero{background:linear-gradient(155deg,var(--acc-2) 0%,var(--acc) 55%,var(--acc-d) 130%);color:var(--on-acc);border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
-.hero::after{content:"";position:absolute;right:-60px;top:-70px;width:200px;height:200px;border-radius:50%;border:1px solid rgba(255,255,255,.18);pointer-events:none}
+.hero::after{content:"";position:absolute;right:-60px;top:-70px;width:200px;height:200px;border-radius:50%;border:1px solid color-mix(in srgb,var(--on-acc) 18%,transparent);pointer-events:none}
 .hero .lbl{font-size:13px;color:var(--hero-lbl)}
 .big{font-size:42px;font-weight:600;letter-spacing:-1.4px;line-height:1}
 .track{height:7px;background:var(--soft);border-radius:4px;overflow:hidden}
 .track>div{height:100%;border-radius:4px;background:var(--acc)}
-.hero .track{background:rgba(255,255,255,.22)}.hero .track>div{background:#fff}
-.chip-in{font-size:11px;background:rgba(255,255,255,.18);border-radius:999px;padding:5px 10px;display:inline-flex;align-items:center;gap:5px;color:#fff}
+.hero .track{background:color-mix(in srgb,var(--on-acc) 22%,transparent)}.hero .track>div{background:var(--on-acc)}
+.chip-in{font-size:11px;background:color-mix(in srgb,var(--on-acc) 16%,transparent);border-radius:999px;padding:5px 10px;display:inline-flex;align-items:center;gap:5px;color:var(--on-acc)}
 .btn{height:50px;border-radius:16px;border:1px solid var(--line);background:var(--card);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;text-decoration:none;color:var(--ink)}
 .btn.dark,.btn.pri{background:var(--acc);color:var(--on-acc);border:0}
 .btn.warnb{background:var(--warn-bg);color:var(--warn-ink);border-color:var(--warn-line)}
@@ -249,9 +253,13 @@ const BILL_SOURCE = 'Opłata stała';
 
 /* ================= Motywy ================= */
 const THEMES = [
-  { id: 'light', name: 'Fiolet', bg: '#EEEAFB', card: '#FFFFFF', acc: '#7448E8' },
-  { id: 'dark', name: 'Noc', bg: '#110C1F', card: '#1B1530', acc: '#8E66FF' },
-  { id: 'pink', name: 'Róż', bg: '#FBEAF3', card: '#FFFFFF', acc: '#D63384' }
+  { id: 'light', fam: 'Fiolet', name: 'Jasny', bg: '#EEEAFB', card: '#FFFFFF', acc: '#7448E8' },
+  { id: 'dark', fam: 'Fiolet', name: 'Ciemny', bg: '#110C1F', card: '#1B1530', acc: '#8E66FF' },
+  { id: 'blue', fam: 'Niebieski', name: 'Jasny', bg: '#E8EFFB', card: '#FFFFFF', acc: '#2F6BEB' },
+  { id: 'blue-dark', fam: 'Niebieski', name: 'Ciemny', bg: '#0A1120', card: '#131C30', acc: '#3F7BFA' },
+  { id: 'lime', fam: 'Limonka', name: 'Jasny', bg: '#F0F4E2', card: '#FFFFFF', acc: '#B4E22A' },
+  { id: 'lime-dark', fam: 'Limonka', name: 'Ciemny', bg: '#0D1109', card: '#161C10', acc: '#C3F03C' },
+  { id: 'pink', fam: 'Róż', name: 'Jasny', bg: '#FBEAF3', card: '#FFFFFF', acc: '#D63384' }
 ];
 let theme = 'light';
 try { theme = localStorage.getItem('dw_theme') || 'light'; } catch (e) { }
@@ -271,10 +279,12 @@ function setTheme(t) {
   api('setTheme', t).catch(() => { });
 }
 function themePicker() {
-  return `<div class="grid3">${THEMES.map(t => `<button type="button" class="theme-opt" data-t="${t.id}" aria-pressed="${t.id === theme}" onclick="setTheme('${t.id}')" style="border:1px solid var(--line);border-radius:16px;padding:10px;background:var(--card);color:var(--ink);display:flex;flex-direction:column;gap:8px;align-items:stretch;outline:${t.id === theme ? '3px solid var(--acc)' : 'none'};outline-offset:1px">
-    <span style="height:54px;border-radius:10px;background:${t.bg};display:flex;flex-direction:column;gap:5px;padding:7px;box-sizing:border-box;border:1px solid rgba(0,0,0,.06)">
-      <span style="height:14px;border-radius:5px;background:${t.acc}"></span><span style="height:8px;width:70%;border-radius:4px;background:${t.card}"></span><span style="height:8px;width:50%;border-radius:4px;background:${t.card}"></span></span>
-    <b style="font-size:13px;text-align:center">${t.name}</b></button>`).join('')}</div>`;
+  const fams = []; THEMES.forEach(t => { if (fams.indexOf(t.fam) < 0) fams.push(t.fam); });
+  const opt = t => `<button type="button" class="theme-opt" data-t="${t.id}" aria-pressed="${t.id === theme}" aria-label="${t.fam} ${t.name.toLowerCase()}" onclick="setTheme('${t.id}')" style="flex:1;border:1px solid var(--line);border-radius:14px;padding:6px;background:${t.bg};display:flex;align-items:center;gap:8px;outline:${t.id === theme ? '3px solid var(--acc)' : 'none'};outline-offset:1px">
+      <span style="width:26px;height:26px;border-radius:8px;background:${t.acc};flex:0 0 auto"></span>
+      <span style="height:8px;flex:1;border-radius:4px;background:${t.card}"></span></button>`;
+  return `<div class="stack" style="gap:8px">${fams.map(f => `<div class="row" style="gap:8px"><b style="width:82px;font-size:13px;font-weight:500">${f}</b>${THEMES.filter(t => t.fam === f).map(opt).join('')}${THEMES.filter(t => t.fam === f).length < 2 ? '<span style="flex:1"></span>' : ''}</div>`).join('')}
+    <div class="row" style="gap:8px;font-size:11px;color:var(--muted)"><span style="width:82px"></span><span style="flex:1;text-align:center">jasny</span><span style="flex:1;text-align:center">ciemny</span></div></div>`;
 }
 function themeSheet() { openSheet(sheetHead('Motyw aplikacji') + `<div class="stack">${themePicker()}<p class="small muted" style="margin:0">Motyw zapamiętuje się osobno dla każdego z Was, na Waszych kontach Google.</p></div>`); }
 
@@ -420,8 +430,8 @@ function vHome() {
       <div class="between" style="align-items:flex-start"><span class="lbl">Wydaliśmy w tym<br>miesiącu</span>${live ? `<span class="chip-in">${svg('check', 12, 2.4)}Arkusz</span>` : ''}</div>
       <span class="big">${money(spent)}</span>
       ${bud ? `<div class="track"><div style="width:${pct}%"></div></div>
-      <div class="between lbl" style="font-size:12px"><span>${pct}% z budżetu ${zl0(bud)}</span><span>${spent > bud ? 'ponad o ' + zl(spent - bud) : 'zostało ' + zl(bud - spent)}</span></div>` : `<button class="link" style="color:#fff;text-align:left" onclick="settingsSheet()">Ustaw miesięczny budżet ›</button>`}
-      <button onclick="go('budget')" style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.16);border:0;border-radius:14px;padding:11px 13px;color:#fff;font-size:14px"><span>Saldo konta</span><b class="num" style="font-size:15px;font-weight:600">${zl(balance())} ›</b></button>
+      <div class="between lbl" style="font-size:12px"><span>${pct}% z budżetu ${zl0(bud)}</span><span>${spent > bud ? 'ponad o ' + zl(spent - bud) : 'zostało ' + zl(bud - spent)}</span></div>` : `<button class="link" style="color:var(--on-acc);text-align:left" onclick="settingsSheet()">Ustaw miesięczny budżet ›</button>`}
+      <button onclick="go('budget')" style="display:flex;justify-content:space-between;align-items:center;background:color-mix(in srgb,var(--on-acc) 15%,transparent);border:0;border-radius:14px;padding:11px 13px;color:var(--on-acc);font-size:14px"><span>Saldo konta</span><b class="num" style="font-size:15px;font-weight:600">${zl(balance())} ›</b></button>
     </section>
     <div class="qa">
       <button class="btn pri" onclick="startScan()">${svg('scan', 17)}Skanuj</button>
@@ -526,13 +536,13 @@ function vBudget() {
     <section class="hero" style="gap:10px">
       <span class="lbl">Saldo wspólnego konta</span>
       <span class="big" style="font-size:36px">${money(balance())}</span>
-      <div class="stack" style="gap:6px;font-size:13px;border-top:1px solid rgba(255,255,255,.22);padding-top:10px">
+      <div class="stack" style="gap:6px;font-size:13px;border-top:1px solid color-mix(in srgb,var(--on-acc) 22%,transparent);padding-top:10px">
         <div class="between"><span class="lbl">Wpływy w tym miesiącu</span><b class="num" style="font-weight:600">+${zl(sum(inc))}</b></div>
         <div class="between"><span class="lbl">Wydatki bieżące</span><b class="num" style="font-weight:600">−${zl(spent)}</b></div>
         <div class="between"><span class="lbl">Opłaty stałe</span><b class="num" style="font-weight:600">−${zl(sum(billEx))}</b></div>
         ${depM.length ? `<div class="between"><span class="lbl">Do skarbonek</span><b class="num" style="font-weight:600">−${zl(sum(depM))}</b></div>` : ''}
       </div>
-      <div class="grid2"><button class="btn sm" style="border:0;background:#fff;color:var(--acc-d)" onclick="incomeSheet()">+ Wpływ</button><button class="btn sm" style="border:0;background:rgba(255,255,255,.18);color:#fff" onclick="correctSheet()">Koryguj saldo</button></div>
+      <div class="grid2"><button class="btn sm" style="border:0;background:var(--card);color:var(--link)" onclick="incomeSheet()">+ Wpływ</button><button class="btn sm" style="border:0;background:color-mix(in srgb,var(--on-acc) 16%,transparent);color:var(--on-acc)" onclick="correctSheet()">Koryguj saldo</button></div>
     </section>
     <div class="grid2">
       <button class="btn" onclick="go('goals')" style="justify-content:space-between"><span class="row" style="gap:8px">${svg('piggy', 19, 1.8)}Skarbonki</span><span class="num muted" style="font-weight:500;font-size:12.5px;white-space:nowrap">${zl0(savedTotal()).replace(' zł','')}</span></button>
